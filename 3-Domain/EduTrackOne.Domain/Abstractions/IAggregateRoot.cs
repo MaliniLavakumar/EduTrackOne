@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EduTrackOne.Domain.Abstractions
 {
-    interface IAggregateRoot
+    public interface IAggregateRoot
 
     {
        
