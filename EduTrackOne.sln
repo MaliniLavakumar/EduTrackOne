@@ -23,6 +23,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5-Persistence", "5-Persiste
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EduTrackOne.Persistence", "5-Persistence\EduTrackOne.Persistence\EduTrackOne.Persistence.csproj", "{F29389A4-BC4D-4E39-8EA2-FA4F04E434A9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Éléments de solution", "Éléments de solution", "{9C8CB701-102D-CF49-A3E0-89AC09D42C2C}"
+	ProjectSection(SolutionItems) = preProject
+		.env = .env
+		docker-compose.override.yml = docker-compose.override.yml
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EduTrackOne.AppHost", "EduTrackOne.AppHost\EduTrackOne.AppHost.csproj", "{52D05055-74AC-4A80-BF83-859690DB4B85}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EduTrackOne.ServiceDefaults", "EduTrackOne.ServiceDefaults\EduTrackOne.ServiceDefaults.csproj", "{CA3EE0EE-7130-6259-0820-C31D454441B8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +104,30 @@ Global
 		{F29389A4-BC4D-4E39-8EA2-FA4F04E434A9}.Release|x64.Build.0 = Release|Any CPU
 		{F29389A4-BC4D-4E39-8EA2-FA4F04E434A9}.Release|x86.ActiveCfg = Release|Any CPU
 		{F29389A4-BC4D-4E39-8EA2-FA4F04E434A9}.Release|x86.Build.0 = Release|Any CPU
+		{52D05055-74AC-4A80-BF83-859690DB4B85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52D05055-74AC-4A80-BF83-859690DB4B85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52D05055-74AC-4A80-BF83-859690DB4B85}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{52D05055-74AC-4A80-BF83-859690DB4B85}.Debug|x64.Build.0 = Debug|Any CPU
+		{52D05055-74AC-4A80-BF83-859690DB4B85}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{52D05055-74AC-4A80-BF83-859690DB4B85}.Debug|x86.Build.0 = Debug|Any CPU
+		{52D05055-74AC-4A80-BF83-859690DB4B85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52D05055-74AC-4A80-BF83-859690DB4B85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52D05055-74AC-4A80-BF83-859690DB4B85}.Release|x64.ActiveCfg = Release|Any CPU
+		{52D05055-74AC-4A80-BF83-859690DB4B85}.Release|x64.Build.0 = Release|Any CPU
+		{52D05055-74AC-4A80-BF83-859690DB4B85}.Release|x86.ActiveCfg = Release|Any CPU
+		{52D05055-74AC-4A80-BF83-859690DB4B85}.Release|x86.Build.0 = Release|Any CPU
+		{CA3EE0EE-7130-6259-0820-C31D454441B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA3EE0EE-7130-6259-0820-C31D454441B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA3EE0EE-7130-6259-0820-C31D454441B8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{CA3EE0EE-7130-6259-0820-C31D454441B8}.Debug|x64.Build.0 = Debug|Any CPU
+		{CA3EE0EE-7130-6259-0820-C31D454441B8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CA3EE0EE-7130-6259-0820-C31D454441B8}.Debug|x86.Build.0 = Debug|Any CPU
+		{CA3EE0EE-7130-6259-0820-C31D454441B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA3EE0EE-7130-6259-0820-C31D454441B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA3EE0EE-7130-6259-0820-C31D454441B8}.Release|x64.ActiveCfg = Release|Any CPU
+		{CA3EE0EE-7130-6259-0820-C31D454441B8}.Release|x64.Build.0 = Release|Any CPU
+		{CA3EE0EE-7130-6259-0820-C31D454441B8}.Release|x86.ActiveCfg = Release|Any CPU
+		{CA3EE0EE-7130-6259-0820-C31D454441B8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -103,5 +138,8 @@ Global
 		{BE8DF0E5-E6E9-4431-BDE4-9AC69964A75B} = {2420C803-290B-F142-B73B-E5BA85E34988}
 		{4D67A434-0786-44F3-9684-5A0F771962C1} = {570C1532-13CA-F497-CA68-30EC18555A83}
 		{F29389A4-BC4D-4E39-8EA2-FA4F04E434A9} = {801C5DC6-1815-F842-ACE2-32205BCEF742}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {69F82C05-4F0E-4FD4-8039-95D8F0D13943}
 	EndGlobalSection
 EndGlobal

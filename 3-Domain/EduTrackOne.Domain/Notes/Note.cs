@@ -1,4 +1,5 @@
 ﻿using EduTrackOne.Domain.Abstractions;
+using EduTrackOne.Domain.Inscriptions;
 using System;
 
 namespace EduTrackOne.Domain.Notes
@@ -7,9 +8,11 @@ namespace EduTrackOne.Domain.Notes
     {
         public DateTime DateExamen { get; private set; }
         public ValeurNote Valeur { get; private set; }
-        public CommentaireEvaluation Commentaire { get; private set; }
+        public CommentaireEvaluation? Commentaire { get; private set; }
         public Guid IdInscription { get; private set; }
+        public Inscription Inscription { get; private set; }
         public Guid IdMatiere { get; private set; }
+        protected Note() { }
 
         // Constructeur
         public Note(Guid id, DateTime dateExamen, ValeurNote valeur, CommentaireEvaluation commentaire, Guid idInscription, Guid idMatiere)
@@ -22,20 +25,18 @@ namespace EduTrackOne.Domain.Notes
             IdMatiere = idMatiere;
         }
 
-        // Méthode pour changer la valeur de la note, avec validation
-        public void ModifierValeur(ValeurNote nouvelleValeur)
+        internal void Modifier(DateTime nouvelleDateExamen, Guid nouvelleIdMatiere, ValeurNote nouvelleValeur, CommentaireEvaluation? commentaire)
         {
+            if (nouvelleDateExamen == default)
+                throw new ArgumentException("Date d'examen invalide.", nameof(nouvelleDateExamen));
+
             if (nouvelleValeur == null)
                 throw new ArgumentNullException(nameof(nouvelleValeur));
-
-            // Ajouter ici une logique de validation si nécessaire
+            DateExamen = nouvelleDateExamen;
+            IdMatiere = nouvelleIdMatiere;
             Valeur = nouvelleValeur;
+            Commentaire = commentaire;
         }
 
-        // Méthode pour ajouter/modifier un commentaire
-        public void AjouterCommentaire(CommentaireEvaluation nouveauCommentaire)
-        {
-            Commentaire = nouveauCommentaire;
-        }
     }
 }

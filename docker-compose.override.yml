@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  edutrackone.api:
+    ports:
+      - "7045:80"  # redirige le port local 7045 vers le conteneur
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_ENVIRONMENT=Development
+      - SA_PASSWORD=${SA_PASSWORD}
+      - ConnectionStrings__Default=Server=sqlserver;Database=EduTrackOneDb;User=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;

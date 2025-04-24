@@ -10,13 +10,14 @@ namespace EduTrackOne.Domain.Matieres
     public class Matiere : Entity, IAggregateRoot
     {
         public NomMatiere Nom { get; private set; }
+        protected Matiere() { }
 
         public Matiere(Guid id, NomMatiere nom) : base(id)
         {
             Nom = nom ?? throw new ArgumentNullException(nameof(nom));
         }
 
-        // Méthode utile (ex : pour affichage ou logique métier)
+        // Méthode pour affichage ou logique métier
         public string GetNom() => Nom.ToString();
     }
 }

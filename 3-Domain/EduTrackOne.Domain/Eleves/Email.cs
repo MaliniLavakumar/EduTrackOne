@@ -8,7 +8,7 @@ namespace EduTrackOne.Domain.Eleves
     public class Email : ValueObject
     {
         public string Value { get; }
-
+        protected Email() { }
         public Email(string value)
         {
             if (string.IsNullOrWhiteSpace(value) || !IsValidEmail(value))

@@ -14,6 +14,7 @@ namespace EduTrackOne.Domain.Classes
         Task AddClasseAsync(Classe classe);
         Task UpdateClasseAsync(Classe classe);
         Task DeleteClasseAsync(Guid id);
-
+        Task<Classe?> GetByAnneeAsync(AnneeScolaire anneeScolaire);
+        Task SaveChangesAsync();
     }
 }

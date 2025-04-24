@@ -9,21 +9,41 @@ namespace EduTrackOne.Domain.Notes
 {
     public class ValeurNote : ValueObject
     {
-        public decimal Valeur { get; }
-
-        public ValeurNote(decimal valeur)
+        public bool EstAbsent { get; private set; }
+        public double? Value { get; private set; }
+        protected ValeurNote() { }
+        public ValeurNote(double value)
         {
-            if (valeur < 1 || valeur > 6)
-                throw new ArgumentOutOfRangeException(nameof(valeur), "La note doit être comprise entre 1 et 6.");
+            if (value < 1 || value > 6 || value % 0.5 != 0)
+                throw new ArgumentOutOfRangeException(nameof(value), "La note doit être comprise entre 1 et 6.");
 
-            Valeur = Math.Round(valeur, 1);
+            Value = value;
+            EstAbsent = false;
         }
+        // Factory pour créer l’état « absent »
+        public static ValeurNote Absent()
+            => new ValeurNote(true);
+
+
+        private ValeurNote(bool absent)
+        {
+            EstAbsent = true;
+            Value = null;
+        }
+
+
+        // Pour l’affichage
+        public override string ToString()
+            => EstAbsent
+               ? "Absent"
+               : Value!.Value.ToString("0.0");
 
         protected override IEnumerable<object> GetEqualityComponents()
         {
-            yield return Valeur;
+            yield return EstAbsent;
+            if (!EstAbsent)
+                yield return Value!.Value;
         }
 
-        public override string ToString() => Valeur.ToString("0.0");
     }
 }

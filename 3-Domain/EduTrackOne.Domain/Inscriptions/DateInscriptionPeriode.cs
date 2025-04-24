@@ -11,7 +11,7 @@ namespace EduTrackOne.Domain.Inscriptions
     {
         public DateTime DateDebut { get; private set; }
         public DateTime? DateFin { get; private set; }
-
+        protected DateInscriptionPeriode() { }
         public DateInscriptionPeriode(DateTime dateDebut, DateTime? dateFin)
         {
             if (dateFin.HasValue && dateFin.Value < dateDebut)

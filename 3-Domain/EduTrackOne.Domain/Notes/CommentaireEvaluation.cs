@@ -9,18 +9,18 @@ namespace EduTrackOne.Domain.Notes
 {
     public class CommentaireEvaluation : ValueObject
     {
-        public string? Commentaire { get; }
-
-        public CommentaireEvaluation(string? commentaire)
+        public string? Value { get; }
+       protected CommentaireEvaluation() { }
+        public CommentaireEvaluation(string? value)
         {
-            Commentaire = string.IsNullOrWhiteSpace(commentaire) ? null : commentaire.Trim();
+            Value = string.IsNullOrWhiteSpace(value) ? null : value.Trim();
         }
 
         protected override IEnumerable<object> GetEqualityComponents()
         {
-            yield return Commentaire ?? string.Empty;
+            yield return Value ?? string.Empty;
         }
 
-        public override string ToString() => Commentaire ?? string.Empty;
+        public override string ToString() => Value ?? string.Empty;
     }
 }

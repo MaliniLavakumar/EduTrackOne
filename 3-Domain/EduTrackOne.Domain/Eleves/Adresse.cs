@@ -9,7 +9,7 @@ namespace EduTrackOne.Domain.Eleves
         public string Rue { get; }
         public string Ville { get; }
         public string CodePostal { get; }
-
+        protected Adresse() { }        
         public Adresse(string rue, string codePostal, string ville)
         {
             if (string.IsNullOrWhiteSpace(rue) || string.IsNullOrWhiteSpace(codePostal) || string.IsNullOrWhiteSpace(ville))

@@ -6,20 +6,25 @@ namespace EduTrackOne.Domain.Eleves
 {
     public class Sexe : ValueObject
     {
-        public string Value { get; }
-
-        public Sexe(string value)
+        public SexeType Value { get; }
+       protected Sexe() { }
+        public Sexe(SexeType value)
         {
-            if (value != "Garçon" && value != "Fille")
-                throw new ArgumentException("Le sexe doit être 'Garçon' ou 'Fille'.");
+            if (!Enum.IsDefined(typeof(SexeType), value))
+                throw new ArgumentException("Valeur invalide pour le sexe.");
             Value = value;
         }
 
-        public override string ToString() => Value;
+        public override string ToString() => Value.ToString();
 
         protected override IEnumerable<object> GetEqualityComponents()
         {
             yield return Value;
+        }
+        public enum SexeType
+        {
+            Garçon,
+            Fille
         }
     }
 }

@@ -7,6 +7,7 @@ namespace EduTrackOne.Domain.Eleves
     public class DateNaissance : ValueObject
     {
         public DateTime Value { get; }
+        protected DateNaissance() { }      
 
         public DateNaissance(DateTime value)
         {

@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver-edutrackone
+    environment:
+       - ACCEPT_EULA=Y
+       - MSSQL_PID=Developer
+       - SA_PASSWORD=${SA_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+    networks:
+      - edutrackone-network
+
+  edutrackone.api:
+    build:
+      context: .
+      dockerfile: 1-Presentation/EduTrackOne.API/Dockerfile
+   
+    depends_on:
+      - sqlserver
+    ports:
+      - "8080:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__Default=Server=sqlserver,1433;Database=EduTrackOneDb;User=sa;Password=${SA_PASSWORD};
+    networks:
+      - edutrackone-network
+
+volumes:
+  sql_data:
+
+networks:
+  edutrackone-network:

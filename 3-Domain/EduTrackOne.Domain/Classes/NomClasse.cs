@@ -8,7 +8,7 @@ namespace EduTrackOne.Domain.Classes
     public class NomClasse : ValueObject
     {
         public string Value { get; }
-
+        protected NomClasse() { }
         public NomClasse(string value)
         {
             if (string.IsNullOrWhiteSpace(value))

@@ -4,6 +4,7 @@ using EduTrackOne.Domain.Inscriptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using EduTrackOne.Domain.EnseignantsPrincipaux;
 
 namespace EduTrackOne.Domain.Classes
 {
@@ -13,10 +14,13 @@ namespace EduTrackOne.Domain.Classes
         public AnneeScolaire AnneeScolaire { get; private set; }
 
         public Guid? IdEnseignantPrincipal { get; private set; }
+        public EnseignantPrincipal EnseignantPrincipal { get; private set; }
 
         // Liste des inscriptions pour cette classe
         private readonly List<Inscription> _inscriptions = new();
         public IReadOnlyCollection<Inscription> Inscriptions => _inscriptions.AsReadOnly();
+
+        protected Classe() { }
 
         // Constructeur
         public Classe(Guid id, NomClasse nom, AnneeScolaire anneeScolaire)
@@ -50,7 +54,7 @@ namespace EduTrackOne.Domain.Classes
             if (dejaInscrit)
                 throw new InvalidOperationException("Cet élève est déjà inscrit dans cette classe.");
 
-            if (Inscriptions.Count >= 20)
+            if (Inscriptions.Count > 20)
                 throw new InvalidOperationException("La classe a atteint sa capacité maximale.");
 
             var inscription = new Inscription(Guid.NewGuid(), periode, this.Id, eleveId);
@@ -72,16 +76,7 @@ namespace EduTrackOne.Domain.Classes
         {
             return _inscriptions.FirstOrDefault(i => i.IdEleve == eleveId);
         }
-        public Eleve? ObtenirEleve(Guid idEleve)
-        {
-            var inscription = _inscriptions.FirstOrDefault(i => i.IdEleve == idEleve);
-            if (inscription != null)
-            {
-                // Retourne l'élève associé à l'inscription dans cette classe
-                return inscription.Eleve;
-            }
-            return null; // Élève non trouvé dans cette classe
-        }
+       
 
     }
 }

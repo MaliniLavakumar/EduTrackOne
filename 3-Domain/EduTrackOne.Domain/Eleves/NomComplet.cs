@@ -8,7 +8,7 @@ namespace EduTrackOne.Domain.Eleves
     {
         public string Prenom { get; }
         public string Nom { get; }
-
+        protected NomComplet() { }
         public NomComplet(string prenom, string nom)
         {
             if (string.IsNullOrWhiteSpace(prenom) || string.IsNullOrWhiteSpace(nom))

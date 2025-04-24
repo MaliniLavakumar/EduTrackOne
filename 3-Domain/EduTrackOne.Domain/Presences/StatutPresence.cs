@@ -9,21 +9,44 @@ namespace EduTrackOne.Domain.Presences
 {
     public class StatutPresence : ValueObject
     {
-        public string Value { get; }
-
-        public StatutPresence(string value)
+        public enum StatutEnum
         {
-            if (string.IsNullOrWhiteSpace(value) || !(value == "Présent" || value == "Absent" || value == "Retard"))
-            {
-                throw new ArgumentException("Le statut de présence doit être 'Présent', 'Absent' ou 'Retard'.");
-            }
-
+            Present,
+            Absent        
+        }
+        protected StatutPresence() { }
+      
+        public StatutEnum Value { get; }
+        public StatutPresence(StatutEnum value)
+        {
             Value = value;
         }
+        public override string ToString() => Value.ToString();
+
+        public string Afficher() => Value switch
+        {
+            StatutEnum.Present => "Présent",
+            StatutEnum.Absent => "Absent",
+            _ => "Inconnu"
+        };
 
         protected override IEnumerable<object> GetEqualityComponents()
         {
             yield return Value;
         }
+
+        public static StatutPresence FromString(string statut)
+        {
+            var normalized = statut.Trim().ToLowerInvariant();
+
+            return normalized switch
+            {
+                "présent" or "present" => new StatutPresence(StatutEnum.Present),
+                "absent" => new StatutPresence(StatutEnum.Absent),
+                _ => throw new ArgumentException("Statut invalide. Doit être 'Présent' ou 'Absent'.")
+            };
+        }
     }
+
 }
+

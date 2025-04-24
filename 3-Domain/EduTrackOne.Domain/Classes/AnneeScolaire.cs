@@ -7,7 +7,8 @@ namespace EduTrackOne.Domain.Classes
 {
     public class AnneeScolaire : ValueObject
     {
-        public string Value { get; }
+        public string Value { get;}
+        protected AnneeScolaire() { }
 
         public AnneeScolaire(string value)
         {

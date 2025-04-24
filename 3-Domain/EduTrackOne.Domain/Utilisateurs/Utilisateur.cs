@@ -5,7 +5,8 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace EduTrackOne.Domain.Utilisateurs
-{
+{ 
+
     public class Utilisateur : Entity, IAggregateRoot
     {
         public string Identifiant { get; private set; }
@@ -13,8 +14,7 @@ namespace EduTrackOne.Domain.Utilisateurs
         public RoleUtilisateur Role { get; private set; }
         public StatutUtilisateur Statut { get; private set; }
         public Email Email { get; private set; }
-
-        // Constructeur (usine)
+        protected Utilisateur() { }       
         public Utilisateur(
             Guid id,
             string identifiant,
@@ -66,12 +66,12 @@ namespace EduTrackOne.Domain.Utilisateurs
         }
 
         // Helpers de rôle
-        public bool EstAdmin() => Role == RoleUtilisateur.Admin;
-        public bool EstEnseignant() => Role == RoleUtilisateur.Enseignant;
+        public bool EstAdmin() => Role.Valeur == RoleUtilisateur.Role.Admin;
+        public bool EstEnseignant() => Role.Valeur == RoleUtilisateur.Role.Enseignant;
 
         public override string ToString()
         {
-            return $"Utilisateur: {Identifiant} | Rôle: {Role.Value} | Statut: {Statut.Value} | Email: {Email.Value}";
+            return $"Utilisateur: {Identifiant} | Rôle: {Role.Valeur} | Statut: {Statut.Value} | Email: {Email.Value}";
         }
 
         //--- Implémentation privée du hash (SHA256 pour l'exemple) ---

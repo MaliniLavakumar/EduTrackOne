@@ -8,7 +8,7 @@ namespace EduTrackOne.Domain.Eleves
     public class Telephone : ValueObject
     {
         public string Value { get; }
-
+        protected Telephone() { }
         public Telephone(string value)
         {
             // Vérification que le numéro commence par +41 et que la longueur est correcte (13 caractères)

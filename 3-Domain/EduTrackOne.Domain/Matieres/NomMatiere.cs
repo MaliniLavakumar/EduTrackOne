@@ -10,7 +10,7 @@ namespace EduTrackOne.Domain.Matieres
     public class NomMatiere : ValueObject
     {
         public string Value { get; }
-
+        protected NomMatiere() { }
         public NomMatiere(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
