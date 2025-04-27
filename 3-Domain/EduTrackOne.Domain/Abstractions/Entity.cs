@@ -15,6 +15,8 @@ namespace EduTrackOne.Domain.Abstractions
             Id = Guid.NewGuid();
         }
 
+        private readonly List<IDomainEvent> _domainEvents = new();
+        public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
         protected Entity(Guid id)
         {
             Id = id;
@@ -46,6 +48,11 @@ namespace EduTrackOne.Domain.Abstractions
         }
 
         public static bool operator !=(Entity? a, Entity? b) => !(a == b);
-    }
+        protected void AddDomainEvent(IDomainEvent domainEvent)
+        {
+            _domainEvents.Add(domainEvent);
 
+        }
+        public void ClearDomainEvents() => _domainEvents.Clear();
+    }
 }

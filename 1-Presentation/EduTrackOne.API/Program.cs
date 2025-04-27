@@ -1,61 +1,65 @@
-using EduTrackOne.Application.Classes.Commands.CreateClasse;
+using EduTrackOne.Application.Classes.CreateClasse;
 using EduTrackOne.Domain.Abstractions;
 using EduTrackOne.Domain.Classes;
+using EduTrackOne.Domain.EnseignantsPrincipaux;
 using EduTrackOne.Persistence;
 using EduTrackOne.Persistence.Repositories;
-using Microsoft.EntityFrameworkCore;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using MediatR;
-
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using EduTrackOne.Application.Classes.DeleteClasse;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-// Remplace les variables d’environnement dans la chaîne de connexion
+// Configuration du DbContext
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     .Replace("${SA_PASSWORD}", Environment.GetEnvironmentVariable("SA_PASSWORD"));
 
 builder.Services.AddDbContext<EduTrackOneDbContext>(options =>
     options.UseSqlServer(connectionString, sqlOptions =>
-    sqlOptions.EnableRetryOnFailure(
-        maxRetryCount: 5,
-        maxRetryDelay: TimeSpan.FromSeconds(10),
-        errorNumbersToAdd: null)
-    )
-    );
+        sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null))
+);
 
-
-// Add services to the container.
+// Inscription des services de persistance et métier
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IClasseRepository, ClasseRepository>();
+builder.Services.AddScoped<IEnseignantPrincipalRepository, EnseignantPrincipalRepository>();
+
+// Inscription du validateur
+builder.Services.AddTransient<IValidator<CreateClasseDto>, CreateClasseDtoValidator>();
+
+// Activation de l’auto-validation FluentValidation
 builder.Services.AddControllersWithViews();
-builder.Services.AddMediatR(cfg => {
-    cfg.RegisterServicesFromAssemblyContaining<CreateClasseHandler>();
-});
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+
+// MediatR
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssemblyContaining<CreateClasseHandler>()
+    .RegisterServicesFromAssemblyContaining<DeleteClasseHandler>()
+);
+
 var app = builder.Build();
 
 app.MapDefaultEndpoints();
 
-
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
 app.UseAuthorization();
-
 app.MapStaticAssets();
-
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
+    "default",
+    "{controller=Home}/{action=Index}/{id?}"
+).WithStaticAssets();
 
 app.Run();

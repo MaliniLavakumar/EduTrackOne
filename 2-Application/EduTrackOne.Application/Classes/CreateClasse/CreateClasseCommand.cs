@@ -7,11 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using MediatR;
 
-namespace EduTrackOne.Application.Classes.Commands.CreateClasse
+namespace EduTrackOne.Application.Classes.CreateClasse
 {
-    public class CreateClasseCommand : IRequest<Result<Guid>>
-    {
-        public string NomClasse { get; set; }
-        public string AnneeScolaire { get; set; }
-    }
+    public record CreateClasseCommand(
+         string NomClasse,
+         string AnneeScolaire,
+         Guid? IdEnseignantPrincipal
+     ) :IRequest<Result<Guid>>;
 }

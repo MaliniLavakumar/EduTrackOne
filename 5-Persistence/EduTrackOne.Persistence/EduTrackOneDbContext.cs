@@ -13,14 +13,21 @@ using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using MediatR;
+using EduTrackOne.Domain.Abstractions;
 
 namespace EduTrackOne.Persistence
 {
     public class EduTrackOneDbContext : DbContext
     {
+        private readonly IMediator _mediator;
         public EduTrackOneDbContext(DbContextOptions<EduTrackOneDbContext> options)
+        : base(options)
+        { }
+        public EduTrackOneDbContext(DbContextOptions<EduTrackOneDbContext> options, IMediator mediator)
             : base(options)
         {
+            _mediator = mediator;
         }
 
         public DbSet<Classe> Classes { get; set; }
@@ -31,6 +38,26 @@ namespace EduTrackOne.Persistence
         public DbSet<Note> Notes { get; set; }
         public DbSet<Presence> Presences { get; set; }
         public DbSet<Utilisateur> Utilisateurs { get; set; }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var domainEvents = ChangeTracker.Entries<Entity>()
+                .SelectMany(e => e.Entity.DomainEvents)
+                .ToList();
+
+            var result = await base.SaveChangesAsync(cancellationToken);
+
+            foreach (var domainEvent in domainEvents)
+            {
+                await _mediator.Publish(domainEvent, cancellationToken);
+            }
+
+            // Nettoyer après publication
+            ChangeTracker.Entries<Entity>().ToList()
+                .ForEach(e => e.Entity.ClearDomainEvents());
+
+            return result;
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

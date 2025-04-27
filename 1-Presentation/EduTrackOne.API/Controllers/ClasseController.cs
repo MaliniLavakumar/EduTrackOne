@@ -1,4 +1,5 @@
-﻿using EduTrackOne.Application.Classes.Commands.CreateClasse;
+﻿using EduTrackOne.Application.Classes.CreateClasse;
+using EduTrackOne.Application.Classes.DeleteClasse;
 using EduTrackOne.Application.Classes.Queries.GetClasseById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -16,21 +17,36 @@ namespace EduTrackOne.API.Controllers
             _mediator = mediator;
         }
 
+       
         [HttpPost]
-        public async Task<IActionResult> CreateClasse([FromBody] CreateClasseCommand command)
+        public async Task<IActionResult> Create([FromBody] CreateClasseDto dto)
         {
+            // 1. Validation automatique par FluentValidation
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _mediator.Send(command);
+            // 2. Construction de la commande
+            var cmd = new CreateClasseCommand(
+                dto.NomClasse,
+                dto.AnneeScolaire,
+                dto.IdEnseignantPrincipal
+            );
 
-            if (result.IsSuccess)
-                return CreatedAtAction(nameof(GetClasseById), new { id = result.Value }, result.Value);
+            // 3. Envoi de la commande au handler
+            var result = await _mediator.Send(cmd);
 
-            return BadRequest(result.Error);
+            // 4. Gestion du résultat
+            if (!result.IsSuccess)
+                return BadRequest(new { Error = result.Error });
+
+            // 5. Retourne 201 Created avec la route pour récupérer la ressource
+            return CreatedAtAction(
+                nameof(GetClasseById),
+                new { id = result.Value },
+                new { Id = result.Value }
+            );
         }
-
-        [HttpGet("{id}")]
+            [HttpGet("{id}")]
         public async Task<IActionResult> GetClasseById(Guid id)
         {
             var result = await _mediator.Send(new GetClasseByIdQuery(id));
@@ -39,6 +55,17 @@ namespace EduTrackOne.API.Controllers
                 return Ok(result.Value);
 
             return NotFound(result.Error);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var result = await _mediator.Send(new DeleteClasseCommand(id));
+
+            if (!result.IsSuccess)
+                return NotFound(result.Error);
+
+            return NoContent();
         }
 
     }

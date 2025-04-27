@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using EduTrackOne.Domain.EnseignantsPrincipaux;
+using EduTrackOne.Domain.Classes.Events;
 
 namespace EduTrackOne.Domain.Classes
 {
@@ -20,6 +21,7 @@ namespace EduTrackOne.Domain.Classes
         private readonly List<Inscription> _inscriptions = new();
         public IReadOnlyCollection<Inscription> Inscriptions => _inscriptions.AsReadOnly();
 
+        
         protected Classe() { }
 
         // Constructeur
@@ -28,6 +30,7 @@ namespace EduTrackOne.Domain.Classes
         {
             Nom = nom ?? throw new ArgumentNullException(nameof(nom));
             AnneeScolaire = anneeScolaire ?? throw new ArgumentNullException(nameof(anneeScolaire));
+            AddDomainEvent(new ClassCreatedEvent(this.Id));
         }
 
         // Assigner ou changer l'enseignant principal
@@ -76,7 +79,11 @@ namespace EduTrackOne.Domain.Classes
         {
             return _inscriptions.FirstOrDefault(i => i.IdEleve == eleveId);
         }
-       
+        public void SupprimerClasse()
+        {
+            AddDomainEvent(new ClassDeletedEvent(this.Id));
+        }
+
 
     }
 }
