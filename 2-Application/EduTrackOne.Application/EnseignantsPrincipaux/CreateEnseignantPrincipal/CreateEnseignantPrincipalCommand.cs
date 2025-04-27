@@ -8,10 +8,9 @@ using System.Threading.Tasks;
 
 namespace EduTrackOne.Application.EnseignantsPrincipaux.CreateEnseignantPrincipal
 {
-    public class CreateEnseignantPrincipalCommand : IRequest<Result<Guid>>
-    {
-        public string Nom { get; set; }
-        public string Prenom { get; set; }
-        public string Email { get; set; }
-    }
+    public record CreateEnseignantPrincipalCommand(
+         string Prenom,
+         string Nom,
+         string Email
+     ) : IRequest<Result<Guid>>;
 }

@@ -10,6 +10,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using EduTrackOne.Application.Classes.DeleteClasse;
+using EduTrackOne.Application.EnseignantsPrincipaux.CreateEnseignantPrincipal;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,18 +31,20 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IClasseRepository, ClasseRepository>();
 builder.Services.AddScoped<IEnseignantPrincipalRepository, EnseignantPrincipalRepository>();
 
-// Inscription du validateur
-builder.Services.AddTransient<IValidator<CreateClasseDto>, CreateClasseDtoValidator>();
 
 // Activation de l’auto-validation FluentValidation
 builder.Services.AddControllersWithViews();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
 
+builder.Services.AddValidatorsFromAssemblyContaining<CreateClasseCommandValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateEnseignantPrincipalCommandValidator>();
+
 // MediatR
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblyContaining<CreateClasseHandler>()
-    .RegisterServicesFromAssemblyContaining<DeleteClasseHandler>()
+       .RegisterServicesFromAssemblyContaining<DeleteClasseHandler>()
+       .RegisterServicesFromAssemblyContaining<CreateEnseignantPrincipalHandler>()
 );
 
 var app = builder.Build();

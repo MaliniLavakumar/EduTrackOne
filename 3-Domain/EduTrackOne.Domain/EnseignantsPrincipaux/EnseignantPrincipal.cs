@@ -1,6 +1,7 @@
 ﻿using EduTrackOne.Domain.Abstractions;
 using EduTrackOne.Domain.Classes;
 using EduTrackOne.Domain.Eleves;
+using EduTrackOne.Domain.EnseignantsPrincipaux.Events;
 using EduTrackOne.Domain.Inscriptions;
 using System;
 
@@ -23,6 +24,10 @@ namespace EduTrackOne.Domain.EnseignantsPrincipaux
         {
             NomComplet = nomComplet ?? throw new ArgumentNullException(nameof(nomComplet));
             Email = email ?? throw new ArgumentNullException(nameof(email));
+            AddDomainEvent(new EnseignantPrincipalCreatedEvent(
+                this.Id,
+                NomComplet.ToString(),
+                Email.Value));
         }
 
         // Méthode de mise à jour des infos de contact

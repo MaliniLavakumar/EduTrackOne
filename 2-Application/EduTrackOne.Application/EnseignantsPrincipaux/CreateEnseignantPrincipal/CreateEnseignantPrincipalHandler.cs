@@ -1,40 +1,56 @@
 ﻿using EduTrackOne.Application.Common;
 using EduTrackOne.Application.EnseignantsPrincipaux.CreateEnseignantPrincipal;
+using EduTrackOne.Domain.Abstractions;
 using EduTrackOne.Domain.Eleves;
 using EduTrackOne.Domain.EnseignantsPrincipaux;
+using FluentValidation;
 using MediatR;
 
-namespace EduTrackOne.Application.Enseignants.Commands.CreateEnseignantPrincipal
+namespace EduTrackOne.Application.EnseignantsPrincipaux.CreateEnseignantPrincipal
 {
-    public class CreateEnseignantPrincipalHandler : IRequestHandler<CreateEnseignantPrincipalCommand, Result<Guid>>
+    public class CreateEnseignantPrincipalHandler
+        : IRequestHandler<CreateEnseignantPrincipalCommand, Result<Guid>>
     {
-        private readonly IEnseignantPrincipalRepository _enseignantPrincipalRepository;
+        private readonly IEnseignantPrincipalRepository _repo;
+        private readonly IUnitOfWork _uow;
+        private readonly IValidator<CreateEnseignantPrincipalCommand> _validator;
 
-        public CreateEnseignantPrincipalHandler(IEnseignantPrincipalRepository enseignantPrincipalRepository)
+        public CreateEnseignantPrincipalHandler(
+            IEnseignantPrincipalRepository repo,
+            IUnitOfWork uow,
+            IValidator<CreateEnseignantPrincipalCommand> validator)
         {
-            _enseignantPrincipalRepository = enseignantPrincipalRepository;
+            _repo = repo;
+            _uow = uow;
+            _validator = validator;
         }
 
-        public async Task<Result<Guid>> Handle(CreateEnseignantPrincipalCommand request, CancellationToken cancellationToken)
+        public async Task<Result<Guid>> Handle(
+            CreateEnseignantPrincipalCommand request,
+            CancellationToken cancellationToken)
         {
-            try
+            // 1. Validation de la commande
+            var validation = await _validator.ValidateAsync(request, cancellationToken);
+            if (!validation.IsValid)
             {
-                var nomComplet = new NomComplet(request.Prenom, request.Nom);
-                var enseignantPrincipal = new EnseignantPrincipal(
-                    Guid.NewGuid(),
-                    nomComplet,                  
-                    new Email(request.Email)
-                );
-
-                await _enseignantPrincipalRepository.AddAsync(enseignantPrincipal);
-                await _enseignantPrincipalRepository.SaveChangesAsync();
-
-                return Result<Guid>.Success(enseignantPrincipal.Id);
+                var errors = string.Join("; ", validation.Errors);
+                return Result<Guid>.Failure($"Erreurs de validation : {errors}");
             }
-            catch (Exception ex)
-            {
-                return Result<Guid>.Failure($"Erreur lors de la création de l'enseignant : {ex.Message}");
-            }
+
+            // 2. Création des Value Objects
+            var nomComplet = new NomComplet(request.Prenom, request.Nom);
+            var emailVo = new Domain.Eleves.Email(request.Email);
+
+            // 3. Création de l'agrégat
+            //    Le constructeur lève automatiquement EnseignantPrincipalCreatedEvent
+            var enseignant = new EnseignantPrincipal(Guid.NewGuid(), nomComplet, emailVo);
+
+            // 4. Persistance
+            await _repo.AddAsync(enseignant);
+            await _uow.SaveChangesAsync(cancellationToken);
+
+            // 5. Retour du résultat avec l'ID de l'enseignant créé
+            return Result<Guid>.Success(enseignant.Id);
         }
     }
 }

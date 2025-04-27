@@ -17,14 +17,11 @@ namespace EduTrackOne.API.Controllers
             _mediator = mediator;
         }
 
-       
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateClasseDto dto)
         {
             // 1. Validation automatique par FluentValidation
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             // 2. Construction de la commande
             var cmd = new CreateClasseCommand(
                 dto.NomClasse,
@@ -46,7 +43,7 @@ namespace EduTrackOne.API.Controllers
                 new { Id = result.Value }
             );
         }
-            [HttpGet("{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetClasseById(Guid id)
         {
             var result = await _mediator.Send(new GetClasseByIdQuery(id));
