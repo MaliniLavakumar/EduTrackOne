@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using EduTrackOne.Application.Classes.DeleteClasse;
 using EduTrackOne.Application.EnseignantsPrincipaux.CreateEnseignantPrincipal;
+using EduTrackOne.Domain.Eleves;
+using EduTrackOne.Application.Eleves.CreateEleve;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,6 +32,7 @@ builder.Services.AddDbContext<EduTrackOneDbContext>(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IClasseRepository, ClasseRepository>();
 builder.Services.AddScoped<IEnseignantPrincipalRepository, EnseignantPrincipalRepository>();
+builder.Services.AddScoped<IEleveRepository, EleveRepository>();
 
 
 // Activation de l’auto-validation FluentValidation
@@ -39,12 +42,14 @@ builder.Services.AddFluentValidationClientsideAdapters();
 
 builder.Services.AddValidatorsFromAssemblyContaining<CreateClasseCommandValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateEnseignantPrincipalCommandValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateEleveCommandValidator>();
 
 // MediatR
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblyContaining<CreateClasseHandler>()
        .RegisterServicesFromAssemblyContaining<DeleteClasseHandler>()
        .RegisterServicesFromAssemblyContaining<CreateEnseignantPrincipalHandler>()
+       .RegisterServicesFromAssemblyContaining<CreateEleveHandler>()
 );
 
 var app = builder.Build();

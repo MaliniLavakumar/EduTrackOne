@@ -23,27 +23,28 @@ namespace EduTrackOne.Persistence.Repositories
         {
             int result = await _dbContext.SaveChangesAsync(cancellationToken);
 
-            await DispatchDomainEventsAsync();
+            await DispatchDomainEventsAsync(cancellationToken);
 
             return result;
         }
 
-        private async Task DispatchDomainEventsAsync()
+        private async Task DispatchDomainEventsAsync(CancellationToken cancellationToken)
         {
             // Trouver tous les agrégats qui ont des Domain Events
             var domainEntities = _dbContext.ChangeTracker
                 .Entries<Entity>()
                 .Where(x => x.Entity.DomainEvents.Any())
-                .Select(x => x.Entity);
+                .Select(x => x.Entity)
+                .ToList();
 
             foreach (var entity in domainEntities)
             {
                 foreach (var domainEvent in entity.DomainEvents)
                 {
-                    await _mediator.Publish(domainEvent);
+                    await _mediator.Publish(domainEvent, cancellationToken);
                 }
 
-                entity.ClearDomainEvents(); 
+                entity.ClearDomainEvents();
             }
         }
 

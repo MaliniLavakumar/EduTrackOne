@@ -12,9 +12,9 @@ namespace EduTrackOne.Domain.Eleves
         public Telephone(string value)
         {
             // Vérification que le numéro commence par +41 et que la longueur est correcte (13 caractères)
-            if (string.IsNullOrWhiteSpace(value) || !value.StartsWith("+41") || value.Length != 13 || !value.Substring(1).All(char.IsDigit))
+            if (string.IsNullOrWhiteSpace(value) || !value.StartsWith("+41") || value.Length != 12 || !value.Substring(1).All(char.IsDigit))
             {
-                throw new ArgumentException("Le numéro de téléphone doit commencer par +41 et être composé de 13 chiffres.");
+                throw new ArgumentException("Le numéro de téléphone doit commencer par +41 et être composé de 11 chiffres.");
             }
             Value = value;
         }

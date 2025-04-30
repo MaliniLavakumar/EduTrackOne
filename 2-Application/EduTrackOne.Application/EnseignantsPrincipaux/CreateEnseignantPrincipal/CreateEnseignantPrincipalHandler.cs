@@ -39,7 +39,7 @@ namespace EduTrackOne.Application.EnseignantsPrincipaux.CreateEnseignantPrincipa
 
             // 2. Création des Value Objects
             var nomComplet = new NomComplet(request.Prenom, request.Nom);
-            var emailVo = new Domain.Eleves.Email(request.Email);
+            var emailVo = new Email(request.Email);
 
             // 3. Création de l'agrégat
             //    Le constructeur lève automatiquement EnseignantPrincipalCreatedEvent

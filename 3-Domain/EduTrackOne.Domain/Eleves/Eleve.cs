@@ -1,4 +1,5 @@
 ﻿using EduTrackOne.Domain.Abstractions;
+using EduTrackOne.Domain.Eleves.Events;
 using EduTrackOne.Domain.Inscriptions;
 using System;
 using System.Collections.Generic;
@@ -36,6 +37,7 @@ namespace EduTrackOne.Domain.Eleves
             Tel1 = tel1 ?? throw new ArgumentNullException(nameof(tel1));
             Tel2 = tel2;
             NoImmatricule = noImmatricule ?? throw new ArgumentNullException(nameof(noImmatricule));
+            AddDomainEvent(new EleveCreatedEvent(this.Id, this.NoImmatricule));
         }
 
         // Mettre à jour les infos personnelles

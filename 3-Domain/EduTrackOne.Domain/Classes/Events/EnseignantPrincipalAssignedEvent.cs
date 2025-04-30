@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EduTrackOne.Domain.Classes.Events
 {
-    class TeacherAssignedEvent
+    class EnseignantPrincipalAssignedEvent
     {
     }
 }
