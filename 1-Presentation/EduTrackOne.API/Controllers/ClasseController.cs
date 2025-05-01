@@ -1,6 +1,6 @@
 ﻿using EduTrackOne.Application.Classes.CreateClasse;
 using EduTrackOne.Application.Classes.DeleteClasse;
-using EduTrackOne.Application.Classes.Queries.GetClasseById;
+using EduTrackOne.Application.Classes.GetClasseById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

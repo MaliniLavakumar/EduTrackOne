@@ -8,7 +8,7 @@ namespace EduTrackOne.Domain.Eleves
 {
     public interface IEleveRepository
     {
-        Task<Eleve?> GetByIdAsync(Guid id);
+        Task<Eleve?> GetByIdAsync(Guid id, CancellationToken cancellationToken =default);
         Task AddAsync(Eleve eleve);
         Task UpdateCoordonneesAsync(Eleve eleve);
         Task<bool> ExistsByNoImmatriculeAsync(string noImmatricule, CancellationToken cancellationToken = default);

@@ -15,11 +15,11 @@ namespace EduTrackOne.Persistence.Repositories
         {
             _context = context;
         }
-        public async Task<Eleve?> GetByIdAsync(Guid id)
+        public async Task<Eleve?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.Eleves
                     .Include(e => e.Inscriptions)
-                    .FirstOrDefaultAsync(e => e.Id == id);
+                    .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
         }
         public async Task AddAsync(Eleve eleve)
         {

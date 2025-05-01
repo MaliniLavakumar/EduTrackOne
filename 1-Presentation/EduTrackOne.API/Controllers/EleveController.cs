@@ -1,5 +1,6 @@
 ﻿using EduTrackOne.Application.Common;
 using EduTrackOne.Application.Eleves.CreateEleve;
+using EduTrackOne.Application.Eleves.GetEleveById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -41,9 +42,14 @@ namespace EduTrackOne.API.Controllers
                 new { Id = result.Value });
         }
         [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
         {
-            return Ok(Result<string>.Success($"Données simulées pour l'élève avec l'ID : {id}"));
+            var result = await _mediator.Send(new GetEleveByIdQuery(id), cancellationToken);
+
+            if (!result.IsSuccess)
+                return NotFound(result.Error);
+
+            return Ok(result.Value);
         }
     }
 }

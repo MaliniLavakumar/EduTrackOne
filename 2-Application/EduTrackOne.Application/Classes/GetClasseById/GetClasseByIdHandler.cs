@@ -4,7 +4,7 @@ using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace EduTrackOne.Application.Classes.Queries.GetClasseById
+namespace EduTrackOne.Application.Classes.GetClasseById
 {
     public class GetClasseByIdHandler : IRequestHandler<GetClasseByIdQuery, Result<ClasseDto>>
     {
