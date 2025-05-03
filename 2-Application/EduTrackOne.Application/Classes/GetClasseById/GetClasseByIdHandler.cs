@@ -21,11 +21,12 @@ namespace EduTrackOne.Application.Classes.GetClasseById
             return (classe == null)
                 ? Result<ClasseDto>.Failure("Classe introuvable.")
                 : Result<ClasseDto>.Success(new ClasseDto
-                {
-                    Id = classe.Id,
-                    NomClasse = classe.Nom.Value,
-                    AnneeScolaire = classe.AnneeScolaire.Value
-                });
+                (
+                    classe.Id,
+                    classe.Nom.Value,
+                    classe.AnneeScolaire.Value,
+                    classe.IdEnseignantPrincipal
+                ));
 
 
         }

@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace EduTrackOne.Application.Classes.CreateClasse
 {
-    public class CreateClasseDto
-    {
-        public string NomClasse{ get; set; }
-        public string AnneeScolaire { get; set; }
-        public Guid? IdEnseignantPrincipal { get; set; } // Facultatif
-    }
+    public record CreateClasseDto(
+
+         string NomClasse,
+         string AnneeScolaire,
+         Guid? IdEnseignantPrincipal
+    );
 }
 

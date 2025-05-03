@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 
 namespace EduTrackOne.Application.Eleves
 {
-    public class EleveDto
-    {
-        public Guid Id { get; set; }
-        public string Prenom { get; set; } = default!;
-        public string Nom { get; set; } = default!;
-        public DateTime DateNaissance { get; set; }
-        public string Sexe { get; set; } = default!;
-        public string Adresse { get; set; } = default!;
-        public string EmailParent { get; set; } = default!;
-        public string Tel1 { get; set; } = default!;
-        public string? Tel2 { get; set; }
-        public string NoImmatricule { get; set; } = default!;
-    }
+    public record EleveDto
+    (
+        Guid Id,
+        string Prenom,
+        string Nom,
+        DateTime DateNaissance,
+        string Sexe,
+        string Adresse,
+        string EmailParent,
+        string Tel1,
+        string? Tel2,
+        string NoImmatricule
+        );
 }

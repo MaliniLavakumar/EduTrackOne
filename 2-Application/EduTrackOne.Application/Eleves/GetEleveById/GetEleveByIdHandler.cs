@@ -24,19 +24,20 @@ namespace EduTrackOne.Application.Eleves.GetEleveById
                 return Result<EleveDto>.Failure("Élève non trouvé.");
 
             var dto = new EleveDto
-            {
-                Id = eleve.Id,
-                Prenom = eleve.NomComplet.Prenom,
-                Nom = eleve.NomComplet.Nom,
-                DateNaissance = eleve.DateNaissance.Value,
-                Sexe = eleve.Sexe.ToString(),
-                Adresse = eleve.Adresse.ToString(),
-                EmailParent = eleve.EmailParent.Value,
-                Tel1 = eleve.Tel1.Value,
-                Tel2 = eleve.Tel2?.Value,
-                NoImmatricule = eleve.NoImmatricule
+            (
+                eleve.Id,
+                eleve.NomComplet.Prenom,
+                eleve.NomComplet.Nom,
+                eleve.DateNaissance.Value,
+                eleve.Sexe.ToString(),
+                eleve.Adresse.ToString(),
+                eleve.EmailParent.Value,
+                eleve.Tel1.Value,
+                eleve.Tel2?.Value,
+                eleve.NoImmatricule
+                );
 
-            };
+
 
             return Result<EleveDto>.Success(dto);
         }

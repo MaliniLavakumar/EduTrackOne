@@ -13,6 +13,7 @@ using EduTrackOne.Application.Classes.DeleteClasse;
 using EduTrackOne.Application.EnseignantsPrincipaux.CreateEnseignantPrincipal;
 using EduTrackOne.Domain.Eleves;
 using EduTrackOne.Application.Eleves.CreateEleve;
+using EduTrackOne.Application.Eleves.UpdateEleve;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,6 +44,7 @@ builder.Services.AddFluentValidationClientsideAdapters();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateClasseCommandValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateEnseignantPrincipalCommandValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateEleveCommandValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateEleveCommandValidator>();
 
 // MediatR
 builder.Services.AddMediatR(cfg =>
@@ -50,6 +52,7 @@ builder.Services.AddMediatR(cfg =>
        .RegisterServicesFromAssemblyContaining<DeleteClasseHandler>()
        .RegisterServicesFromAssemblyContaining<CreateEnseignantPrincipalHandler>()
        .RegisterServicesFromAssemblyContaining<CreateEleveHandler>()
+       .RegisterServicesFromAssemblyContaining<UpdateEleveHandler>()
 );
 
 var app = builder.Build();

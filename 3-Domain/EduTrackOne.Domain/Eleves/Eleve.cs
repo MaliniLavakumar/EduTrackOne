@@ -41,12 +41,19 @@ namespace EduTrackOne.Domain.Eleves
         }
 
         // Mettre à jour les infos personnelles
-        public void ModifierCoordonnees(Adresse nouvelleAdresse, Telephone tel1, Telephone tel2, Email emailParent)
+        public void ModifierCoordonnees(Adresse nouvelleAdresse, Telephone tel1, Telephone? tel2, Email emailParent)
         {
             Adresse = nouvelleAdresse ?? throw new ArgumentNullException(nameof(nouvelleAdresse));
             Tel1 = tel1 ?? throw new ArgumentNullException(nameof(tel1));
             Tel2 = tel2; //facultatif
             EmailParent = emailParent ?? throw new ArgumentNullException(nameof (emailParent));
+
+            AjouterDomainEvent(new EleveUpdatedEvent(Id, nouvelleAdresse, tel1, tel2, emailParent));
+        }
+
+        public void AjouterDomainEvent(IDomainEvent domainEvent)
+        {
+            AddDomainEvent(domainEvent);
         }
 
         // Affichage nom complet

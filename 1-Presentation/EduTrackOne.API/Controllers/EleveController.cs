@@ -1,6 +1,7 @@
 ﻿using EduTrackOne.Application.Common;
 using EduTrackOne.Application.Eleves.CreateEleve;
 using EduTrackOne.Application.Eleves.GetEleveById;
+using EduTrackOne.Application.Eleves.UpdateEleve;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -25,7 +26,7 @@ namespace EduTrackOne.API.Controllers
                  dto.Sexe,
                  dto.Rue,
                  dto.CodePostal,
-                 dto.Ville,                
+                 dto.Ville,
                  dto.EmailParent,
                  dto.Tel1,
                  dto.Tel2,
@@ -50,6 +51,22 @@ namespace EduTrackOne.API.Controllers
                 return NotFound(result.Error);
 
             return Ok(result.Value);
+        }
+
+
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateEleveDto dto)
+        {
+            // S’assurer que l’ID dans l’URL correspond à celui du DTO
+            if (id != dto.EleveId)
+                return BadRequest("L'identifiant de l'élève ne correspond pas.");
+
+            var result = await _mediator.Send(new UpdateEleveCommand(dto));
+
+            if (result.IsSuccess)
+                return Ok(result.Value); // ou return NoContent(); si tu veux une réponse vide
+
+            return BadRequest(result.Error);
         }
     }
 }
