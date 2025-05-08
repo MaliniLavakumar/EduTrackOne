@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace EduTrackOne.Application.Classes.DeleteClasse
 {
-    public class DeleteClasseHandler : IRequestHandler<DeleteClasseCommand, Result<Guid>>
+    public class DeleteClasseCommandHandler : IRequestHandler<DeleteClasseCommand, Result<Guid>>
     {
         private readonly IClasseRepository _classeRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public DeleteClasseHandler(IClasseRepository classeRepository, IUnitOfWork unitOfWork)
+        public DeleteClasseCommandHandler(IClasseRepository classeRepository, IUnitOfWork unitOfWork)
         {
             _classeRepository = classeRepository;
             _unitOfWork = unitOfWork;

@@ -17,12 +17,12 @@ namespace EduTrackOne.Persistence.Repositories
             _context = context;
         }
 
-        public async Task AddClasseAsync(Classe classe)
+        public async Task AddClasseAsync(Classe classe, CancellationToken ct = default)
         {
             await _context.Classes.AddAsync(classe);
         }
 
-        public async Task DeleteClasseAsync(Guid id)
+        public async Task DeleteClasseAsync(Guid id, CancellationToken ct = default)
         {
             var classe = await _context.Classes.FindAsync(id);
             if (classe != null)
@@ -31,13 +31,12 @@ namespace EduTrackOne.Persistence.Repositories
             }
         }
 
-        public async Task<Classe?> GetClasseByIdAsync(Guid id)
+        public async Task<Classe?> GetClasseByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.Classes
                 .Include(c => c.Inscriptions)
-                .ThenInclude(i => i.Eleve)
                 .Include(c => c.EnseignantPrincipal)
-                .FirstOrDefaultAsync(c => c.Id == id);
+                .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
         }
 
         public async Task<IReadOnlyList<Classe>> GetClasseParEnseignantAsync(Guid idEnseignant)
@@ -51,15 +50,15 @@ namespace EduTrackOne.Persistence.Repositories
         {
             return await _context.Classes
                 .FirstOrDefaultAsync(c => c.AnneeScolaire.Value == anneeScolaire.Value);
-                }
+        }
 
-        public Task UpdateClasseAsync(Classe classe)
+        public Task UpdateClasseAsync(Classe classe, CancellationToken cancellationToken = default)
         {
             _context.Classes.Update(classe);
             return Task.CompletedTask;
         }
 
-        public Task SaveChangesAsync()
+        public Task SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             return _context.SaveChangesAsync();
         }

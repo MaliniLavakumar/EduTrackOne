@@ -75,7 +75,7 @@ namespace EduTrackOne.Persistence
                 });
                 b.OwnsOne(ep => ep.Email, vo => vo.Property(v => v.Value).HasColumnName("Email"));
 
-                b.HasMany(c=> c.Classes)
+                b.HasMany(c => c.Classes)
                  .WithOne(c => c.EnseignantPrincipal)
                  .HasForeignKey(c => c.IdEnseignantPrincipal)
                  .OnDelete(DeleteBehavior.SetNull);
@@ -93,14 +93,10 @@ namespace EduTrackOne.Persistence
                 b.OwnsOne(c => c.AnneeScolaire, vo => vo.Property(v => v.Value).HasColumnName("AnneeScolaire"));
                 b.Property(c => c.IdEnseignantPrincipal).HasColumnName("IdEnseignantPrincipal");
                 // Mapping de la collection via le champ privé _inscriptions
-                b.HasMany(c=> c.Inscriptions)
-                 .WithOne(i => i.Classe)
-                 .HasForeignKey(i => i.IdClasse)
-                 .OnDelete(DeleteBehavior.Cascade);
-                b.Metadata
-                 .FindNavigation(nameof(Classe.Inscriptions))!
-                 .SetPropertyAccessMode(PropertyAccessMode.Field);
-
+                b.Property(e => e.RowVersion)
+                 .IsRowVersion()
+                 .HasColumnName("RowVersion")
+                 .ValueGeneratedOnAddOrUpdate();
             });
 
             // Eleve configuration
@@ -108,6 +104,10 @@ namespace EduTrackOne.Persistence
             {
                 b.ToTable("Eleves");
                 b.HasKey(e => e.Id);
+                b.Property(e => e.RowVersion)
+                .IsRowVersion()
+                .HasColumnName("RowVersion")
+                .ValueGeneratedOnAddOrUpdate();
                 b.OwnsOne(e => e.NomComplet, vo =>
                 {
                     vo.Property(v => v.Prenom).HasColumnName("Prenom");
@@ -133,20 +133,20 @@ namespace EduTrackOne.Persistence
                 b.OwnsOne(e => e.Tel1, vo => vo.Property(v => v.Value).HasColumnName("Tel1"));
                 b.OwnsOne(e => e.Tel2, vo => vo.Property(v => v.Value).HasColumnName("Tel2"));
                 b.Property(e => e.NoImmatricule).HasColumnName("NoImmatricule");
-                b.HasMany(e => e.Inscriptions)
-                 .WithOne(i => i.Eleve)
-                 .HasForeignKey(i => i.IdEleve)
-                 .OnDelete(DeleteBehavior.Cascade);
-                b.Metadata
-                 .FindNavigation(nameof(Eleve.Inscriptions))!
-                 .SetPropertyAccessMode(PropertyAccessMode.Field);
+
             });
 
             // Inscription configuration
             modelBuilder.Entity<Inscription>(b =>
             {
+
                 b.ToTable("Inscriptions");
                 b.HasKey(i => i.Id);
+                b.Property(e => e.RowVersion)
+                .IsRowVersion()
+                .HasColumnName("RowVersion")
+                .ValueGeneratedOnAddOrUpdate();
+
                 b.OwnsOne(i => i.Periode, vo =>
                 {
                     vo.Property(v => v.DateDebut).HasColumnName("DateDebut");
@@ -154,11 +154,20 @@ namespace EduTrackOne.Persistence
                 });
                 b.Property(i => i.IdClasse).HasColumnName("IdClasse");
                 b.Property(i => i.IdEleve).HasColumnName("IdEleve");
-                b.HasMany(i=> i.Notes)
+                b.HasOne<Classe>()              // pas de nav property dans Classe
+                 .WithMany()                    // pas de nav property inverse
+                 .HasForeignKey(i => i.IdClasse)
+                 .OnDelete(DeleteBehavior.Cascade);
+                b.HasOne<Eleve>()
+                 .WithMany()
+                 .HasForeignKey(i => i.IdEleve)
+                 .OnDelete(DeleteBehavior.Cascade);
+
+                b.HasMany(i => i.Notes)
                  .WithOne(n => n.Inscription)
                  .HasForeignKey(n => n.IdInscription)
                  .OnDelete(DeleteBehavior.Cascade);
-                  // 1 → N Presences
+                // 1 → N Presences
                 b.HasMany(i => i.Presences)
                  .WithOne(p => p.Inscription)
                  .HasForeignKey(p => p.IdInscription)

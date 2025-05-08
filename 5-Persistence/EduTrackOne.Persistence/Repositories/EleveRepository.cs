@@ -21,12 +21,12 @@ namespace EduTrackOne.Persistence.Repositories
                     .Include(e => e.Inscriptions)
                     .FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
         }
-        public async Task AddAsync(Eleve eleve)
+        public async Task AddAsync(Eleve eleve, CancellationToken ct = default)
         {
             await _context.Eleves.AddAsync(eleve);
         }
 
-        public Task UpdateCoordonneesAsync(Eleve eleve)
+        public Task UpdateCoordonneesAsync(Eleve eleve, CancellationToken ct = default)
         {
             _context.Eleves.Update(eleve);
             return Task.CompletedTask;
@@ -36,6 +36,13 @@ namespace EduTrackOne.Persistence.Repositories
             return await _context.Eleves
                                  .AsNoTracking()
                                  .AnyAsync(e => e.NoImmatricule == noImmatricule, cancellationToken);
+        }
+
+        public async Task<Eleve?> GetByNoImmatriculeAsync(string noImmatricule, CancellationToken cancellationToken = default)
+        {
+            return await _context.Eleves
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.NoImmatricule == noImmatricule, cancellationToken);
         }
     }
 }

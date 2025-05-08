@@ -14,6 +14,8 @@ using EduTrackOne.Application.EnseignantsPrincipaux.CreateEnseignantPrincipal;
 using EduTrackOne.Domain.Eleves;
 using EduTrackOne.Application.Eleves.CreateEleve;
 using EduTrackOne.Application.Eleves.UpdateEleve;
+using EduTrackOne.Application.Classes.AddInscription;
+using EduTrackOne.Domain.Inscriptions;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,10 +36,15 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IClasseRepository, ClasseRepository>();
 builder.Services.AddScoped<IEnseignantPrincipalRepository, EnseignantPrincipalRepository>();
 builder.Services.AddScoped<IEleveRepository, EleveRepository>();
+builder.Services.AddScoped<IInscriptionRepository, InscriptionRepository>();
 
 
 // Activation de l’auto-validation FluentValidation
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+  .AddJsonOptions(options =>
+  {
+      options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+  });
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
 
@@ -45,14 +52,15 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateClasseCommandValidato
 builder.Services.AddValidatorsFromAssemblyContaining<CreateEnseignantPrincipalCommandValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateEleveCommandValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateEleveCommandValidator>();
-
+builder.Services.AddValidatorsFromAssemblyContaining<AddInscriptionCommandValidator>();
 // MediatR
 builder.Services.AddMediatR(cfg =>
-    cfg.RegisterServicesFromAssemblyContaining<CreateClasseHandler>()
-       .RegisterServicesFromAssemblyContaining<DeleteClasseHandler>()
-       .RegisterServicesFromAssemblyContaining<CreateEnseignantPrincipalHandler>()
-       .RegisterServicesFromAssemblyContaining<CreateEleveHandler>()
-       .RegisterServicesFromAssemblyContaining<UpdateEleveHandler>()
+    cfg.RegisterServicesFromAssemblyContaining<CreateClasseCommandHandler>()
+       .RegisterServicesFromAssemblyContaining<DeleteClasseCommandHandler>()
+       .RegisterServicesFromAssemblyContaining<CreateEnseignantPrincipalCommandHandler>()
+       .RegisterServicesFromAssemblyContaining<CreateEleveCommandHandler>()
+       .RegisterServicesFromAssemblyContaining<UpdateEleveCommandHandler>()
+       .RegisterServicesFromAssemblyContaining<AddInscriptionCommandHandler>()
 );
 
 var app = builder.Build();

@@ -6,13 +6,13 @@ using MediatR;
 
 namespace EduTrackOne.Application.Classes.CreateClasse
 {
-    public class CreateClasseHandler
+    public class CreateClasseCommandHandler
         : IRequestHandler<CreateClasseCommand, Result<Guid>>
     {
         private readonly IClasseRepository _classeRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IValidator<CreateClasseCommand> _validator;
-        public CreateClasseHandler(IClasseRepository classeRepository, IUnitOfWork unitOfWork, IValidator<CreateClasseCommand> validator)
+        public CreateClasseCommandHandler(IClasseRepository classeRepository, IUnitOfWork unitOfWork, IValidator<CreateClasseCommand> validator)
         {
             _classeRepository = classeRepository;
             _unitOfWork = unitOfWork;

@@ -3,6 +3,7 @@ using EduTrackOne.Domain.Eleves.Events;
 using EduTrackOne.Domain.Inscriptions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection.Metadata;
@@ -22,6 +23,8 @@ namespace EduTrackOne.Domain.Eleves
 
         private readonly List<Inscription> _inscriptions = new();
         public IReadOnlyCollection<Inscription> Inscriptions => _inscriptions.AsReadOnly();
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
         protected Eleve() { }
 
         // Constructeur

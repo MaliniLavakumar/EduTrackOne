@@ -8,22 +8,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentValidation;
 
 namespace EduTrackOne.Application.Eleves.UpdateEleve
 {
-    public class UpdateEleveHandler : IRequestHandler<UpdateEleveCommand, Result<Guid>>
+    public class UpdateEleveCommandHandler : IRequestHandler<UpdateEleveCommand, Result<Guid>>
     {
         private readonly IEleveRepository _eleveRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IValidator<UpdateEleveCommand> _validator;
 
-        public UpdateEleveHandler(IEleveRepository eleveRepository, IUnitOfWork unitOfWork)
+        public UpdateEleveCommandHandler(IEleveRepository eleveRepository, IUnitOfWork unitOfWork, IValidator<UpdateEleveCommand> validator)
         {
             _eleveRepository = eleveRepository;
             _unitOfWork = unitOfWork;
+            _validator = validator;
         }
 
         public async Task<Result<Guid>> Handle(UpdateEleveCommand request, CancellationToken cancellationToken)
         {
+            var validation = await _validator.ValidateAsync(request, cancellationToken);
+            if (!validation.IsValid)
+            {
+                var errors = string.Join("; ", validation.Errors);
+                return Result<Guid>.Failure($"Erreurs de validation : {errors}");
+            }
             var dto = request.Dto;
 
             // 1. Récupérer l’élève

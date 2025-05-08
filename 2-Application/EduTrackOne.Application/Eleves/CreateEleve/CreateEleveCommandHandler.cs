@@ -7,14 +7,14 @@ using System;
 
 namespace EduTrackOne.Application.Eleves.CreateEleve
 {
-    public class CreateEleveHandler : IRequestHandler<CreateEleveCommand, Result<Guid>>
+    public class CreateEleveCommandHandler : IRequestHandler<CreateEleveCommand, Result<Guid>>
     {
         private readonly IEleveRepository _repo;
         private readonly IUnitOfWork _uow;
         private readonly IValidator<CreateEleveCommand> _validator;
 
 
-        public CreateEleveHandler(
+        public CreateEleveCommandHandler(
            IEleveRepository repo,
            IUnitOfWork uow,
            IValidator<CreateEleveCommand> validator)

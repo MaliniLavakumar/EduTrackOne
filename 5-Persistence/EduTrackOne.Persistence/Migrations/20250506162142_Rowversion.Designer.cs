@@ -4,6 +4,7 @@ using EduTrackOne.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EduTrackOne.Persistence.Migrations
 {
     [DbContext(typeof(EduTrackOneDbContext))]
-    partial class EduTrackOneDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250506162142_Rowversion")]
+    partial class Rowversion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,12 +89,6 @@ namespace EduTrackOne.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ClasseId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("EleveId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("IdClasse")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("IdClasse");
@@ -108,10 +105,6 @@ namespace EduTrackOne.Persistence.Migrations
                         .HasColumnName("RowVersion");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ClasseId");
-
-                    b.HasIndex("EleveId");
 
                     b.HasIndex("IdClasse");
 
@@ -469,22 +462,14 @@ namespace EduTrackOne.Persistence.Migrations
 
             modelBuilder.Entity("EduTrackOne.Domain.Inscriptions.Inscription", b =>
                 {
-                    b.HasOne("EduTrackOne.Domain.Classes.Classe", null)
+                    b.HasOne("EduTrackOne.Domain.Classes.Classe", "Classe")
                         .WithMany("Inscriptions")
-                        .HasForeignKey("ClasseId");
-
-                    b.HasOne("EduTrackOne.Domain.Eleves.Eleve", null)
-                        .WithMany("Inscriptions")
-                        .HasForeignKey("EleveId");
-
-                    b.HasOne("EduTrackOne.Domain.Classes.Classe", null)
-                        .WithMany()
                         .HasForeignKey("IdClasse")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EduTrackOne.Domain.Eleves.Eleve", null)
-                        .WithMany()
+                    b.HasOne("EduTrackOne.Domain.Eleves.Eleve", "Eleve")
+                        .WithMany("Inscriptions")
                         .HasForeignKey("IdEleve")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -509,6 +494,10 @@ namespace EduTrackOne.Persistence.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("InscriptionId");
                         });
+
+                    b.Navigation("Classe");
+
+                    b.Navigation("Eleve");
 
                     b.Navigation("Periode")
                         .IsRequired();

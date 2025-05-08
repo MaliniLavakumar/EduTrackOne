@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EduTrackOne.Domain.EnseignantsPrincipaux;
 using EduTrackOne.Domain.Classes.Events;
+using System.ComponentModel.DataAnnotations;
 
 namespace EduTrackOne.Domain.Classes
 {
@@ -20,8 +21,10 @@ namespace EduTrackOne.Domain.Classes
         // Liste des inscriptions pour cette classe
         private readonly List<Inscription> _inscriptions = new();
         public IReadOnlyCollection<Inscription> Inscriptions => _inscriptions.AsReadOnly();
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
 
-        
+
         protected Classe() { }
 
         // Constructeur
@@ -48,8 +51,11 @@ namespace EduTrackOne.Domain.Classes
         }
 
         // Inscrire un élève (ne pas permettre doublon)
-        public void InscrireEleve(Guid eleveId, DateInscriptionPeriode periode)
+        public Guid InscrireEleve(Guid eleveId, DateInscriptionPeriode periode)
         {
+            if (_inscriptions.Count >= 20)
+                throw new InvalidOperationException("La classe a atteint sa capacité maximale.");
+
             if (eleveId == Guid.Empty)
                 throw new ArgumentException("L'identifiant de l'élève est invalide.");
 
@@ -57,11 +63,16 @@ namespace EduTrackOne.Domain.Classes
             if (dejaInscrit)
                 throw new InvalidOperationException("Cet élève est déjà inscrit dans cette classe.");
 
-            if (Inscriptions.Count > 20)
-                throw new InvalidOperationException("La classe a atteint sa capacité maximale.");
+            var inscription = Inscription.Creer(
+                Guid.NewGuid(),
+                this.Id,
+                eleveId,
+                periode
+                );
 
-            var inscription = new Inscription(Guid.NewGuid(), periode, this.Id, eleveId);
             _inscriptions.Add(inscription);
+            AjouterDomainEvent(new StudentRegisteredEvent(this.Id, eleveId,periode));
+            return inscription.Id;
         }
 
         // Supprimer une inscription d'élève
@@ -72,6 +83,7 @@ namespace EduTrackOne.Domain.Classes
                 throw new InvalidOperationException("L'élève n'est pas inscrit dans cette classe.");
 
             _inscriptions.Remove(inscription);
+            AjouterDomainEvent(new StudentDeletedEvent(inscription.Id, this.Id, eleveId));
         }
 
         // Rechercher une inscription
@@ -83,7 +95,8 @@ namespace EduTrackOne.Domain.Classes
         {
             AddDomainEvent(new ClassDeletedEvent(this.Id));
         }
-
+        public void AjouterDomainEvent(IDomainEvent domainEvent)
+    => AddDomainEvent(domainEvent);
 
     }
 }

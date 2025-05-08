@@ -8,14 +8,14 @@ using MediatR;
 
 namespace EduTrackOne.Application.EnseignantsPrincipaux.CreateEnseignantPrincipal
 {
-    public class CreateEnseignantPrincipalHandler
+    public class CreateEnseignantPrincipalCommandHandler
         : IRequestHandler<CreateEnseignantPrincipalCommand, Result<Guid>>
     {
         private readonly IEnseignantPrincipalRepository _repo;
         private readonly IUnitOfWork _uow;
         private readonly IValidator<CreateEnseignantPrincipalCommand> _validator;
 
-        public CreateEnseignantPrincipalHandler(
+        public CreateEnseignantPrincipalCommandHandler(
             IEnseignantPrincipalRepository repo,
             IUnitOfWork uow,
             IValidator<CreateEnseignantPrincipalCommand> validator)
