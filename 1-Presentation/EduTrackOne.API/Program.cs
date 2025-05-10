@@ -16,6 +16,11 @@ using EduTrackOne.Application.Eleves.CreateEleve;
 using EduTrackOne.Application.Eleves.UpdateEleve;
 using EduTrackOne.Application.Classes.AddInscription;
 using EduTrackOne.Domain.Inscriptions;
+using Microsoft.Data.SqlClient;
+using EduTrackOne.Application.Classes.RemoveInscription;
+using EduTrackOne.Application.Matieres.CreateMatiere;
+using EduTrackOne.Application.Inscriptions.GetInscriptionsByClasse;
+using EduTrackOne.Domain.Matieres;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +42,8 @@ builder.Services.AddScoped<IClasseRepository, ClasseRepository>();
 builder.Services.AddScoped<IEnseignantPrincipalRepository, EnseignantPrincipalRepository>();
 builder.Services.AddScoped<IEleveRepository, EleveRepository>();
 builder.Services.AddScoped<IInscriptionRepository, InscriptionRepository>();
+builder.Services.AddScoped<IMatiereRepository, MatiereRepository>();
+
 
 
 // Activation de l’auto-validation FluentValidation
@@ -53,6 +60,11 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateEnseignantPrincipalCo
 builder.Services.AddValidatorsFromAssemblyContaining<CreateEleveCommandValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateEleveCommandValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<AddInscriptionCommandValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<RemoveInscriptionCommandValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateMatiereCommandValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<GetInscriptionsByClasseQueryValidator>();
+
+
 // MediatR
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblyContaining<CreateClasseCommandHandler>()
@@ -61,6 +73,8 @@ builder.Services.AddMediatR(cfg =>
        .RegisterServicesFromAssemblyContaining<CreateEleveCommandHandler>()
        .RegisterServicesFromAssemblyContaining<UpdateEleveCommandHandler>()
        .RegisterServicesFromAssemblyContaining<AddInscriptionCommandHandler>()
+       .RegisterServicesFromAssemblyContaining<RemoveInscriptionCommandHandler>()
+       .RegisterServicesFromAssemblyContaining<CreateMatiereCommandHandler>()
 );
 
 var app = builder.Build();

@@ -1,4 +1,5 @@
 ﻿using EduTrackOne.Domain.Abstractions;
+using EduTrackOne.Domain.Matieres.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,15 @@ namespace EduTrackOne.Domain.Matieres
         public Matiere(Guid id, NomMatiere nom) : base(id)
         {
             Nom = nom ?? throw new ArgumentNullException(nameof(nom));
+        }
+        public static Matiere Creer(Guid id, NomMatiere nom)
+        {
+            var matiere = new Matiere(id, nom);
+
+            // Ici, on est *dans* le domaine : on peut appeler AddDomainEvent
+            matiere.AddDomainEvent(new MatiereCreatedEvent(id, nom.Value));
+
+            return matiere;
         }
 
         // Méthode pour affichage ou logique métier
