@@ -10,6 +10,7 @@ using EduTrackOne.Application.Classes.RemoveInscription;
 using EduTrackOne.Application.Inscriptions.GetInscriptionsByClasse;
 using EduTrackOne.Contracts.DTOs;
 using EduTrackOne.Application.Inscriptions.AddNotesForClasse;
+using EduTrackOne.Application.Inscriptions.AddPresencesForClasse;
 
 namespace EduTrackOne.API.Controllers
 {
@@ -150,6 +151,26 @@ namespace EduTrackOne.API.Controllers
                 dto.ClasseId,
                 dto.DateExamen,
                 dto.Notes
+            );
+            var result = await _mediator.Send(cmd, ct);
+            if (!result.IsSuccess)
+                return BadRequest(result.Error);
+            return Ok(new { Created = result.Value });
+        }
+        [HttpPost("{classeId}/presences")]
+        public async Task<IActionResult> AddPresencesForClasse(
+        Guid classeId,
+        [FromBody] AddPresencesForClasseDto dto,
+        CancellationToken ct)
+        {
+            if (classeId != dto.ClasseId)
+                return BadRequest("ClasseId mismatch");
+
+            var cmd = new AddPresencesForClasseCommand(
+                dto.ClasseId,
+                dto.Date,
+                dto.Periode,
+                dto.Presences
             );
             var result = await _mediator.Send(cmd, ct);
             if (!result.IsSuccess)

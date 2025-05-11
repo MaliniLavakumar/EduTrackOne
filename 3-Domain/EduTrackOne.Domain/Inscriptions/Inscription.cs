@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
+
 namespace EduTrackOne.Domain.Inscriptions
 {
     public class Inscription : Entity, IAggregateRoot
@@ -135,6 +136,15 @@ namespace EduTrackOne.Domain.Inscriptions
                     "La présence pour cette date et cette période a déjà été enregistrée.");
 
             _presences.Add(presence);
+            AddDomainEvent(new PresenceAddedEvent(
+                this.Id,
+                presence.Id,
+                this.IdEleve,
+                this.IdClasse,
+                presence.Date,
+                presence.Periode,
+                presence.Statut.Afficher()
+                ));
         }
         public IReadOnlyDictionary<Guid, double> CalculerMoyennesParMatiere()
         {

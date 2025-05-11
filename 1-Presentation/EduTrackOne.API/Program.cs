@@ -24,6 +24,8 @@ using EduTrackOne.Domain.Matieres;
 using EduTrackOne.Application.Inscriptions.Services;
 using EduTrackOne.Application.Inscriptions.AddNotesForClasse;
 using EduTrackOne.Domain.Notes;
+using EduTrackOne.Domain.Presences;
+using EduTrackOne.Application.Inscriptions.AddPresencesForClasse;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,6 +50,7 @@ builder.Services.AddScoped<IInscriptionRepository, InscriptionRepository>();
 builder.Services.AddScoped<IMatiereRepository, MatiereRepository>();
 builder.Services.AddScoped<INoteRepository, NoteRepository>();
 builder.Services.AddScoped<IInscriptionManager, InscriptionManager>();
+builder.Services.AddScoped<IPresenceRepository, PresenceRepository>();
 
 
 
@@ -69,6 +72,8 @@ builder.Services.AddValidatorsFromAssemblyContaining<RemoveInscriptionCommandVal
 builder.Services.AddValidatorsFromAssemblyContaining<CreateMatiereCommandValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<GetInscriptionsByClasseQueryValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<AddNotesForClasseCommandValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<AddPresencesForClasseCommandValidator>();
+
 
 
 
@@ -83,6 +88,7 @@ builder.Services.AddMediatR(cfg =>
        .RegisterServicesFromAssemblyContaining<RemoveInscriptionCommandHandler>()
        .RegisterServicesFromAssemblyContaining<CreateMatiereCommandHandler>()
        .RegisterServicesFromAssemblyContaining<AddNotesForClasseCommandHandler>()
+       .RegisterServicesFromAssemblyContaining<AddPresencesForClasseCommandHandler>()
 
 );
 
