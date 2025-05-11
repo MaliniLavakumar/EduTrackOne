@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EduTrackOne.Application.Classes.CreateClasse
+namespace EduTrackOne.Contracts.DTOs
 {
     public record CreateClasseDto(
 

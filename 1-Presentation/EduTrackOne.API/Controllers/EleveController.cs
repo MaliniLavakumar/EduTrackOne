@@ -2,6 +2,7 @@
 using EduTrackOne.Application.Eleves.CreateEleve;
 using EduTrackOne.Application.Eleves.GetEleveById;
 using EduTrackOne.Application.Eleves.UpdateEleve;
+using EduTrackOne.Contracts.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -38,7 +39,7 @@ namespace EduTrackOne.API.Controllers
                 return BadRequest(result.Error);
 
             return CreatedAtAction(
-                nameof(Create),
+                nameof(GetById),
                 new { id = result.Value },
                 new { Id = result.Value });
         }
@@ -61,7 +62,15 @@ namespace EduTrackOne.API.Controllers
             if (id != dto.EleveId)
                 return BadRequest("L'identifiant de l'élève ne correspond pas.");
 
-            var result = await _mediator.Send(new UpdateEleveCommand(dto));
+            var command = new UpdateEleveCommand(
+                dto.EleveId,
+                dto.Rue,
+                dto.CodePostal,
+                dto.Ville,
+                dto.Tel1,
+                dto.Tel2,
+                dto.EmailParent);
+            var result = await _mediator.Send(command);
 
             if (result.IsSuccess)
                 return Ok(result.Value); // ou return NoContent(); si tu veux une réponse vide

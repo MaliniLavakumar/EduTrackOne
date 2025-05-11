@@ -1,11 +1,10 @@
-﻿using EduTrackOne.Domain.Inscriptions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EduTrackOne.Application.Classes.AddInscription
+namespace EduTrackOne.Contracts.DTOs
 {
     public record AddInscriptionDto(
         Guid ClasseId,

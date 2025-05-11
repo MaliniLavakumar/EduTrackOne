@@ -65,5 +65,10 @@ namespace EduTrackOne.Persistence.Repositories
             }
             return inscr;
         }
+        public Task UpdateAsync(Inscription insc, CancellationToken ct = default)
+        {
+            _context.Inscriptions.Update(insc);
+            return Task.CompletedTask;
+        }
     }
 }

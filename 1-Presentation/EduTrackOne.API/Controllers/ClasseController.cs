@@ -8,6 +8,8 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using EduTrackOne.Application.Classes.RemoveInscription;
 using EduTrackOne.Application.Inscriptions.GetInscriptionsByClasse;
+using EduTrackOne.Contracts.DTOs;
+using EduTrackOne.Application.Inscriptions.AddNotesForClasse;
 
 namespace EduTrackOne.API.Controllers
 {
@@ -75,13 +77,17 @@ namespace EduTrackOne.API.Controllers
                 return BadRequest("L'ID de la classe dans l'URL ne correspond pas à celui du corps.");
 
             // Construire et envoyer la commande
-            var cmd = new AddInscriptionCommand(dto);
-            Result<Guid> result = await _mediator.Send(cmd, cancellationToken);
-
+            var cmd = new AddInscriptionCommand(
+                    dto.ClasseId,
+                    dto.NoImmatricule,
+                    dto.DateDebut,
+                    dto.DateFin
+                
+            );
+            var result = await _mediator.Send(cmd, cancellationToken);
             if (!result.IsSuccess)
                 return BadRequest(result.Error);
 
-            // Renvoie 201 Created pointant sur la classe modifiée
             return CreatedAtAction(
                 nameof(GetClasseById),
                 new { id = classeId },
@@ -129,6 +135,26 @@ namespace EduTrackOne.API.Controllers
             if (!result.IsSuccess)
                 return BadRequest(result.Error);
             return Ok(result.Value);
+        }
+
+        [HttpPost("{classeId}/notes")]
+        public async Task<IActionResult> AddNotesForClasse(
+        Guid classeId,
+        [FromBody] AddNotesForClasseDto dto,
+        CancellationToken ct)
+        {
+            if (classeId != dto.ClasseId)
+                return BadRequest("ClasseId mismatch");
+
+            var cmd = new AddNotesForClasseCommand(
+                dto.ClasseId,
+                dto.DateExamen,
+                dto.Notes
+            );
+            var result = await _mediator.Send(cmd, ct);
+            if (!result.IsSuccess)
+                return BadRequest(result.Error);
+            return Ok(new { Created = result.Value });
         }
     }
 }

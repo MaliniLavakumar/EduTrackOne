@@ -1,6 +1,7 @@
 ﻿using EduTrackOne.Domain.Abstractions;
 using EduTrackOne.Domain.Classes;
 using EduTrackOne.Domain.Eleves;
+using EduTrackOne.Domain.Inscriptions.Events;
 using EduTrackOne.Domain.Notes;
 using EduTrackOne.Domain.Presences;
 using System;
@@ -73,6 +74,17 @@ namespace EduTrackOne.Domain.Inscriptions
                 throw new InvalidOperationException("La note ne correspond pas à cette inscription.");
 
             _notes.Add(note);
+
+            AddDomainEvent(new NoteAddedEvent(
+                this.Id,
+                note.Id,
+                this.IdEleve,
+                this.IdClasse,
+                note.IdMatiere,
+                note.DateExamen,
+                note.Valeur.Value,    // null si absent
+                note.Valeur.EstAbsent
+    ));
         }
         public void ModifierNote(Guid idNote, DateTime nouvelleDateExamen, Guid nouvelleIdMatiere, ValeurNote nouvelleValeur, CommentaireEvaluation? nouveauCommentaire)
         {
@@ -124,6 +136,24 @@ namespace EduTrackOne.Domain.Inscriptions
 
             _presences.Add(presence);
         }
+        public IReadOnlyDictionary<Guid, double> CalculerMoyennesParMatiere()
+        {
+            // On regroupe les notes valides par IdMatiere
+            var groupes = _notes
+                .Where(n => !n.Valeur.EstAbsent)
+                .GroupBy(n => n.IdMatiere);
 
+            // Pour chaque groupe, on calcule la moyenne
+            var result = new Dictionary<Guid, double>();
+            foreach (var grp in groupes)
+            {
+                var moyenne = grp
+                    .Select(n => n.Valeur.Value!.Value)
+                    .Average();
+                result[grp.Key] = moyenne;
+            }
+
+            return result;
+        }
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using EduTrackOne.Application.Common;
 using EduTrackOne.Application.Matieres.GetAllMatieres;
+using EduTrackOne.Contracts.DTOs;
 
 namespace EduTrackOne.API.Controllers
 {

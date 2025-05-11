@@ -11,18 +11,18 @@ namespace EduTrackOne.Application.Classes.AddInscription
     {
         public AddInscriptionCommandValidator()
         {
-            RuleFor(x => x.Dto.ClasseId)
+            RuleFor(x => x.ClasseId)
                         .NotEmpty().WithMessage("L'ID de la classe est requis.");
 
-            RuleFor(x => x.Dto.NoImmatricule)
+            RuleFor(x => x.NoImmatricule)
                 .NotEmpty().WithMessage("Le numéro d'immatriculation de l'élève est requis.");
 
-            RuleFor(x => x.Dto.DateDebut)
+            RuleFor(x => x.DateDebut)
                 .NotEmpty().WithMessage("La date de début est requise.");
 
-            RuleFor(x => x.Dto.DateFin)
-                .GreaterThanOrEqualTo(x => x.Dto.DateDebut)
-                .When(x => x.Dto.DateFin.HasValue)
+            RuleFor(x => x.DateFin)
+                .GreaterThanOrEqualTo(x => x.DateDebut)
+                .When(x => x.DateFin.HasValue)
                 .WithMessage("La date de fin ne peut pas être antérieure à la date de début.");
         }
     }

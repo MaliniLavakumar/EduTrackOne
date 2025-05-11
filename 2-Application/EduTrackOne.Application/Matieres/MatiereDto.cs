@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EduTrackOne.Application.Matieres.CreateMatiere
+namespace EduTrackOne.Application.Matieres
 {
-    public record CreateMatiereDto(string NomMatiere);
+    public record MatiereDto(Guid Id, string Nom);
     
 }

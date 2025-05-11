@@ -8,5 +8,11 @@ using System.Threading.Tasks;
 
 namespace EduTrackOne.Application.Eleves.UpdateEleve
 {
-    public record UpdateEleveCommand(UpdateEleveDto Dto) :IRequest<Result<Guid>>;   
+    public record UpdateEleveCommand(Guid EleveId,
+        string Rue,
+        string CodePostal,
+        string Ville,
+        string Tel1,
+        string? Tel2,
+        string EmailParent) :IRequest<Result<Guid>>;   
 }

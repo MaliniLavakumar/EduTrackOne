@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\3-Domain\EduTrackOne.Domain\EduTrackOne.Domain.csproj" />
+    <ProjectReference Include="..\..\EduTrackOne.Contracts\EduTrackOne.Contracts.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

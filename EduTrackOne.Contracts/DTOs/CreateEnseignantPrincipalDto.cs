@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EduTrackOne.Application.EnseignantsPrincipaux.CreateEnseignantPrincipal
+namespace EduTrackOne.Contracts.DTOs
 {
     public class CreateEnseignantPrincipalDto
     {

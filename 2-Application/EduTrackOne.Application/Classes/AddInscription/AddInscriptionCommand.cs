@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace EduTrackOne.Application.Classes.AddInscription
 {
-   public record AddInscriptionCommand(AddInscriptionDto Dto): IRequest<Result<Guid>>;
+   public record AddInscriptionCommand(Guid ClasseId,
+        string NoImmatricule,
+        DateTime DateDebut,
+        DateTime? DateFin) : IRequest<Result<Guid>>;
     
 }

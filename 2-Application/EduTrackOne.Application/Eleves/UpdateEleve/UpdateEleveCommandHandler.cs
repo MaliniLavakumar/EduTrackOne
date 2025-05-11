@@ -33,18 +33,18 @@ namespace EduTrackOne.Application.Eleves.UpdateEleve
                 var errors = string.Join("; ", validation.Errors);
                 return Result<Guid>.Failure($"Erreurs de validation : {errors}");
             }
-            var dto = request.Dto;
+            
 
             // 1. Récupérer l’élève
-            var eleve = await _eleveRepository.GetByIdAsync(dto.EleveId);
+            var eleve = await _eleveRepository.GetByIdAsync(request.EleveId);
             if (eleve == null)
                 return Result<Guid>.Failure("Élève introuvable.");
 
             // 2. Créer les nouveaux VO
-            var nouvelleAdresse = new Adresse(dto.Rue, dto.CodePostal, dto.Ville);
-            var tel1 = new Telephone(dto.Tel1);
-            var tel2 = !string.IsNullOrWhiteSpace(dto.Tel2) ? new Telephone(dto.Tel2) : null;
-            var emailParent = new Email(dto.EmailParent);
+            var nouvelleAdresse = new Adresse(request.Rue, request.CodePostal, request.Ville);
+            var tel1 = new Telephone(request.Tel1);
+            var tel2 = !string.IsNullOrWhiteSpace(request.Tel2) ? new Telephone(request.Tel2) : null;
+            var emailParent = new Email(request.EmailParent);
 
             // 3. Mettre à jour les données et ajouter domain event
             eleve.ModifierCoordonnees(nouvelleAdresse, tel1, tel2, emailParent);

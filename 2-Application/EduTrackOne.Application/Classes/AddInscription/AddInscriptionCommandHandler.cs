@@ -45,15 +45,15 @@
                     return Result<Guid>.Failure(errors);
                 }
 
-                var dto = request.Dto;
+                
 
                 // 2. Charger la classe
-                var classe = await _classeRepo.GetClasseByIdAsync(dto.ClasseId, cancellationToken);
+                var classe = await _classeRepo.GetClasseByIdAsync(request.ClasseId, cancellationToken);
                 if (classe is null)
                     return Result<Guid>.Failure("Classe introuvable.");
 
                 // 3. Rechercher l'élève par immatriculation
-                var eleve = await _eleveRepo.GetByNoImmatriculeAsync(dto.NoImmatricule, cancellationToken);
+                var eleve = await _eleveRepo.GetByNoImmatriculeAsync(request.NoImmatricule, cancellationToken);
                 if (eleve == null)
                     return Result<Guid>.Failure("Aucun élève avec ce numéro d'immatriculation.");
 
@@ -62,7 +62,7 @@
                     return Result<Guid>.Failure("Cet élève est déjà inscrit dans la classe.");
 
                 // 5. Construire et valider la période
-                var periodeResult = ConstruirePeriode(dto.DateDebut, dto.DateFin);
+                var periodeResult = ConstruirePeriode(request.DateDebut, request.DateFin);
                 if (!periodeResult.IsSuccess)
                     return Result<Guid>.Failure($"Période invalide : {periodeResult.Error}");
 

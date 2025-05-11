@@ -12,5 +12,6 @@ namespace EduTrackOne.Domain.Inscriptions
         Task<Inscription?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
         Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
         Task<List<Inscription>> GetByClasseAsync(Guid classeId, CancellationToken cancellationToken = default);
+        Task UpdateAsync(Inscription insc, CancellationToken ct = default);
     }
 }

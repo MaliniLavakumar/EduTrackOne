@@ -12,9 +12,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EduTrackOne.Application", "2-Application\EduTrackOne.Application\EduTrackOne.Application.csproj", "{28633F39-75F9-466E-846F-85AFA8CC94F2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3-Domain", "3-Domain", "{2420C803-290B-F142-B73B-E5BA85E34988}"
-	ProjectSection(SolutionItems) = preProject
-		2-Application\EduTrackOne.Application\EnseignantsPrincipaux\CreateEnseignantPrincipal\CreateEnseignantPrincipalDto.cs = 2-Application\EduTrackOne.Application\EnseignantsPrincipaux\CreateEnseignantPrincipal\CreateEnseignantPrincipalDto.cs
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EduTrackOne.Domain", "3-Domain\EduTrackOne.Domain\EduTrackOne.Domain.csproj", "{BE8DF0E5-E6E9-4431-BDE4-9AC69964A75B}"
 EndProject
@@ -36,6 +33,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EduTrackOne.AppHost", "EduTrackOne.AppHost\EduTrackOne.AppHost.csproj", "{52D05055-74AC-4A80-BF83-859690DB4B85}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EduTrackOne.ServiceDefaults", "EduTrackOne.ServiceDefaults\EduTrackOne.ServiceDefaults.csproj", "{CA3EE0EE-7130-6259-0820-C31D454441B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EduTrackOne.Contracts", "EduTrackOne.Contracts\EduTrackOne.Contracts.csproj", "{9B001C9C-9A73-4FE2-94A2-6155F59FB7AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -131,6 +130,18 @@ Global
 		{CA3EE0EE-7130-6259-0820-C31D454441B8}.Release|x64.Build.0 = Release|Any CPU
 		{CA3EE0EE-7130-6259-0820-C31D454441B8}.Release|x86.ActiveCfg = Release|Any CPU
 		{CA3EE0EE-7130-6259-0820-C31D454441B8}.Release|x86.Build.0 = Release|Any CPU
+		{9B001C9C-9A73-4FE2-94A2-6155F59FB7AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B001C9C-9A73-4FE2-94A2-6155F59FB7AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B001C9C-9A73-4FE2-94A2-6155F59FB7AF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9B001C9C-9A73-4FE2-94A2-6155F59FB7AF}.Debug|x64.Build.0 = Debug|Any CPU
+		{9B001C9C-9A73-4FE2-94A2-6155F59FB7AF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9B001C9C-9A73-4FE2-94A2-6155F59FB7AF}.Debug|x86.Build.0 = Debug|Any CPU
+		{9B001C9C-9A73-4FE2-94A2-6155F59FB7AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B001C9C-9A73-4FE2-94A2-6155F59FB7AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B001C9C-9A73-4FE2-94A2-6155F59FB7AF}.Release|x64.ActiveCfg = Release|Any CPU
+		{9B001C9C-9A73-4FE2-94A2-6155F59FB7AF}.Release|x64.Build.0 = Release|Any CPU
+		{9B001C9C-9A73-4FE2-94A2-6155F59FB7AF}.Release|x86.ActiveCfg = Release|Any CPU
+		{9B001C9C-9A73-4FE2-94A2-6155F59FB7AF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
