@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace EduTrackOne.Application.Inscriptions.AddPresencesForClasse
 {
-    public class AddPresencesForClasseCommandHandler : IRequestHandler<AddPresencesForClasseCommand, Result<Guid>>
+    public class AddPresencesForClasseCommandHandler : IRequestHandler<AddPresencesForClasseCommand, Result<int>>
     {
         private readonly IInscriptionRepository _inscRepo;
         private readonly IPresenceRepository _presRepo;
@@ -34,17 +34,17 @@ namespace EduTrackOne.Application.Inscriptions.AddPresencesForClasse
             _validator = validator;
         }
 
-        public async Task<Result<Guid>> Handle(
+        public async Task<Result<int>> Handle(
            AddPresencesForClasseCommand cmd,
             CancellationToken ct)
         {
             var v = await _validator.ValidateAsync(cmd, ct);
             if (!v.IsValid)
-                return Result<Guid>.Failure(string.Join(" | ", v.Errors));
+                return Result<int>.Failure(string.Join(" | ", v.Errors));
 
             var inscriptions = await _inscRepo.GetByClasseAsync(cmd.ClasseId, ct);
             if (!inscriptions.Any())
-                return Result<Guid>.Failure("Aucune inscription trouvée pour cette classe.");
+                return Result<int>.Failure("Aucune inscription trouvée pour cette classe.");
 
             Guid? lastPresenceId = null;
             int count = 0;
@@ -70,14 +70,13 @@ namespace EduTrackOne.Application.Inscriptions.AddPresencesForClasse
             );
 
                 _manager.MarquerPresence(insc, presence);
-                await _presRepo.AddAsync(presence, ct);
-                lastPresenceId = presenceId;
+                await _presRepo.AddAsync(presence, ct);               
                 count++;
             }
             await _uow.SaveChangesAsync(ct);
             return lastPresenceId.HasValue
-            ? Result<Guid>.Success(lastPresenceId!.Value)
-            : Result<Guid>.Failure("Aucune présence créée.");
+            ? Result<int>.Success(count)
+            : Result<int>.Failure("Aucune présence créée.");
         }
     }
 }

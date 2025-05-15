@@ -13,5 +13,19 @@ namespace EduTrackOne.Domain.Abstractions
     {
         void AjouterNote(Inscription inscription, Note note);
         void MarquerPresence(Inscription inscription, Presence presence);
+        void ModifierNote(
+        Inscription inscription,
+        Guid noteId,
+        DateTime nouvelleDateExamen,
+        Guid nouvelleMatiereId,
+        ValeurNote nouvelleValeur,
+        CommentaireEvaluation? nouveauCommentaire);
+
+        void ModifierPresence(
+            Inscription inscription,
+            Guid presenceId,
+            DateTime nouvelleDate,
+            int nouvellePeriode,
+            StatutPresence nouveauStatut);
     }
 }

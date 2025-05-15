@@ -22,7 +22,7 @@ namespace EduTrackOne.Persistence.Repositories
             if (note == null) throw new ArgumentNullException(nameof(note));
 
             await _context.Notes.AddAsync(note, cancellationToken);
-                      
+
         }
 
         /// <summary>

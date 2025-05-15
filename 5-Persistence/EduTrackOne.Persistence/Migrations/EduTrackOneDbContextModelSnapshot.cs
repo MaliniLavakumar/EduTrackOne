@@ -200,6 +200,14 @@ namespace EduTrackOne.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Utilisateurs", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            Identifiant = "admin",
+                            MotDePasseHash = "PrP+ZrMeO00Q+nC1ytSccRIpSvauTkdqHEBRVdRaoSE="
+                        });
                 });
 
             modelBuilder.Entity("EduTrackOne.Domain.Classes.Classe", b =>
@@ -640,6 +648,13 @@ namespace EduTrackOne.Persistence.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("UtilisateurId");
+
+                            b1.HasData(
+                                new
+                                {
+                                    UtilisateurId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                                    Valeur = 0
+                                });
                         });
 
                     b.OwnsOne("EduTrackOne.Domain.Utilisateurs.StatutUtilisateur", "Statut", b1 =>
@@ -657,6 +672,13 @@ namespace EduTrackOne.Persistence.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("UtilisateurId");
+
+                            b1.HasData(
+                                new
+                                {
+                                    UtilisateurId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                                    Value = 0
+                                });
                         });
 
                     b.OwnsOne("EduTrackOne.Domain.Eleves.Email", "Email", b1 =>
@@ -675,6 +697,13 @@ namespace EduTrackOne.Persistence.Migrations
 
                             b1.WithOwner()
                                 .HasForeignKey("UtilisateurId");
+
+                            b1.HasData(
+                                new
+                                {
+                                    UtilisateurId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                                    Value = "admin@edutrackone.com"
+                                });
                         });
 
                     b.Navigation("Email")

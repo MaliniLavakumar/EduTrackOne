@@ -13,6 +13,6 @@ namespace EduTrackOne.Application.Inscriptions.AddNotesForClasse
         Guid ClasseId,
         DateTime DateExamen,
         List<NoteForEleveDto> Notes
-    ) : IRequest<Result<Guid>>;
+    ) : IRequest<Result<int>>;
    
 }

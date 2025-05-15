@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace EduTrackOne.Application.Inscriptions.AddNotesForClasse
 {
-    public class AddNotesForClasseCommandHandler : IRequestHandler<AddNotesForClasseCommand, Result<Guid>>
+    public class AddNotesForClasseCommandHandler : IRequestHandler<AddNotesForClasseCommand, Result<int>>
     {
         private readonly IInscriptionRepository _inscRepo;
         private readonly INoteRepository _noteRepo;
@@ -34,18 +34,18 @@ namespace EduTrackOne.Application.Inscriptions.AddNotesForClasse
             _validator = validator;
         }
 
-        public async Task<Result<Guid>> Handle(
+        public async Task<Result<int>> Handle(
             AddNotesForClasseCommand cmd,
             CancellationToken ct)
         {
             var v = await _validator.ValidateAsync(cmd, ct);
             if (!v.IsValid)
-                return Result<Guid>.Failure(string.Join(" | ", v.Errors));
+                return Result<int>.Failure(string.Join(" | ", v.Errors));
 
             // 1. Charger toutes les inscriptions de la classe
             var inscriptions = await _inscRepo.GetByClasseAsync(cmd.ClasseId, ct);
             if (!inscriptions.Any())
-                return Result<Guid>.Failure("Aucune inscription trouvée pour la classe.");
+                return Result<int>.Failure("Aucune inscription trouvée pour la classe.");
 
             Guid? lastNoteId = null;
             int count = 0;
@@ -72,13 +72,12 @@ namespace EduTrackOne.Application.Inscriptions.AddNotesForClasse
                 );
 
                 _manager.AjouterNote(insc, note);
-                await _noteRepo.AddAsync(note, ct);
-                lastNoteId = noteId;
+                await _noteRepo.AddAsync(note, ct);                
                 count++;
             }
 
             await _uow.SaveChangesAsync(ct);
-            return Result<Guid>.Success(lastNoteId!.Value);
+            return Result<int>.Success(count);
         }
     }
 }

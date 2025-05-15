@@ -23,10 +23,15 @@ namespace EduTrackOne.Domain.Presences
         {
             Date = date;
             Periode = periode;
-            Statut = statut?? throw new ArgumentNullException(nameof(statut));
+            Statut = statut ?? throw new ArgumentNullException(nameof(statut));
             IdInscription = idInscription;
         }
-
+        internal void Modifier(DateTime date, int periode, StatutPresence statut)
+        {
+            Date = date;
+            Periode = periode;
+            Statut = statut;
+        }
         // Affichage de la présence sous forme de chaîne
         public override string ToString()
         {

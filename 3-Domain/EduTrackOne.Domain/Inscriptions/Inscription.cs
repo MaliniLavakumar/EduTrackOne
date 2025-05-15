@@ -106,6 +106,16 @@ namespace EduTrackOne.Domain.Inscriptions
             }
 
             note.Modifier(nouvelleDateExamen, nouvelleIdMatiere, nouvelleValeur, nouveauCommentaire);
+            //publier l'événement
+            AddDomainEvent(new NoteUpdatedEvent(
+                this.Id,
+                idNote,
+                this.IdEleve,
+                this.IdClasse,
+                nouvelleIdMatiere,
+                nouvelleDateExamen,
+                nouvelleValeur?.Value,
+                nouvelleValeur?.EstAbsent ?? false));
         }
         public void SupprimerNote(Guid idNote)
         {
@@ -146,6 +156,38 @@ namespace EduTrackOne.Domain.Inscriptions
                 presence.Statut.Afficher()
                 ));
         }
+        public void ModifierPresence(
+                     Guid presenceId,
+                     DateTime nouvelleDate,
+                     int nouvellePeriode,
+                     StatutPresence nouveauStatut)
+        {
+            var presence = _presences.FirstOrDefault(p => p.Id == presenceId);
+            if (presence == null)
+                throw new InvalidOperationException("Présence introuvable.");
+
+            // On pourrait ajouter une méthode Presence.Modifier(...)
+            // mais pour rester simple on réinstancie ses propriétés internes par reflection/private setter,
+            // ou on ajoute internal void Modifier(...) dans Presence.
+
+            presence.GetType().GetProperty("Date")!
+                .SetValue(presence, nouvelleDate);
+            presence.GetType().GetProperty("Periode")!
+                .SetValue(presence, nouvellePeriode);
+            presence.GetType().GetProperty("Statut")!
+                .SetValue(presence, nouveauStatut);
+            presence.Modifier(nouvelleDate, nouvellePeriode, nouveauStatut);
+
+            AddDomainEvent(new PresenceUpdatedEvent(
+                this.Id,
+                presenceId,
+                this.IdEleve,
+                this.IdClasse,
+                nouvelleDate,
+                nouvellePeriode,
+                nouveauStatut.Afficher()
+            ));
+        }
         public IReadOnlyDictionary<Guid, double> CalculerMoyennesParMatiere()
         {
             // On regroupe les notes valides par IdMatiere
@@ -165,5 +207,6 @@ namespace EduTrackOne.Domain.Inscriptions
 
             return result;
         }
+
     }
 }

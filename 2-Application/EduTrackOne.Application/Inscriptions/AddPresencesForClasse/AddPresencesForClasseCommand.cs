@@ -16,6 +16,6 @@ namespace EduTrackOne.Application.Inscriptions.AddPresencesForClasse
     int Periode,
     List<PresenceEleveDto> Presences
     
-) : IRequest<Result<Guid>>;
+) : IRequest<Result<int>>;
 
 }

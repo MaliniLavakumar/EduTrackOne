@@ -37,5 +37,27 @@ namespace EduTrackOne.Application.Inscriptions.Services
 
             inscription.MarquerPresence(presence);
         }
+        public void ModifierNote(
+       Inscription inscription,
+       Guid noteId,
+       DateTime nouvelleDateExamen,
+       Guid nouvelleMatiereId,
+       ValeurNote nouvelleValeur,
+       CommentaireEvaluation? nouveauCommentaire)
+        {
+            if (inscription == null) throw new ArgumentNullException(nameof(inscription));
+            inscription.ModifierNote(noteId, nouvelleDateExamen, nouvelleMatiereId, nouvelleValeur, nouveauCommentaire);
+        }
+
+        public void ModifierPresence(
+            Inscription inscription,
+            Guid presenceId,
+            DateTime nouvelleDate,
+            int nouvellePeriode,
+            StatutPresence nouveauStatut)
+        {
+            if (inscription == null) throw new ArgumentNullException(nameof(inscription));
+            inscription.ModifierPresence(presenceId, nouvelleDate, nouvellePeriode, nouveauStatut);
+        }
     }
 }

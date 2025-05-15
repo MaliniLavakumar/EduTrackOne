@@ -26,6 +26,21 @@ using EduTrackOne.Application.Inscriptions.AddNotesForClasse;
 using EduTrackOne.Domain.Notes;
 using EduTrackOne.Domain.Presences;
 using EduTrackOne.Application.Inscriptions.AddPresencesForClasse;
+using EduTrackOne.Application.Inscriptions.UpdateNote;
+using EduTrackOne.Application.Inscriptions.UpdatePresence;
+using EduTrackOne.Application.Common.Interfaces;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using EduTrackOne.Infrastructure.Services;
+using EduTrackOne.Domain.Utilisateurs;
+using EduTrackOne.Application.Utilisateurs.CreateUser;
+using System.Net;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Text.Json.Serialization;
+using EduTrackOne.Application.Utilisateurs.UpdateUser;
+using EduTrackOne.Application.Utilisateurs.ChangePassword;
+using EduTrackOne.Application.Utilisateurs.DeleteUser;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,7 +66,12 @@ builder.Services.AddScoped<IMatiereRepository, MatiereRepository>();
 builder.Services.AddScoped<INoteRepository, NoteRepository>();
 builder.Services.AddScoped<IInscriptionManager, InscriptionManager>();
 builder.Services.AddScoped<IPresenceRepository, PresenceRepository>();
+builder.Services.AddScoped<IUtilisateurRepository, UtilisateurRepository>();
 
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 
 // Activation de l’auto-validation FluentValidation
@@ -59,6 +79,7 @@ builder.Services.AddControllersWithViews()
   .AddJsonOptions(options =>
   {
       options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+      options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
   });
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
@@ -73,6 +94,11 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateMatiereCommandValidat
 builder.Services.AddValidatorsFromAssemblyContaining<GetInscriptionsByClasseQueryValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<AddNotesForClasseCommandValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<AddPresencesForClasseCommandValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateNoteCommandValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdatePresenceCommandValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateUserCommandValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UpdateUserCommandValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<ChangePasswordCommandValidator>();
 
 
 
@@ -89,8 +115,47 @@ builder.Services.AddMediatR(cfg =>
        .RegisterServicesFromAssemblyContaining<CreateMatiereCommandHandler>()
        .RegisterServicesFromAssemblyContaining<AddNotesForClasseCommandHandler>()
        .RegisterServicesFromAssemblyContaining<AddPresencesForClasseCommandHandler>()
+       .RegisterServicesFromAssemblyContaining<UpdateNoteCommandHandler>()
+       .RegisterServicesFromAssemblyContaining<UpdatePresenceCommandHandler>()
+       .RegisterServicesFromAssemblyContaining<CreateUserCommandHandler>()
+       .RegisterServicesFromAssemblyContaining<UpdateUserCommandHandler>()
+       .RegisterServicesFromAssemblyContaining<ChangePasswordCommandHandler>()
+       .RegisterServicesFromAssemblyContaining<DeleteUserCommandHandler>()
 
 );
+// Lire la config
+var jwtKey = builder.Configuration["Jwt:Key"];
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+var jwtAudience = builder.Configuration["Jwt:Audience"];
+
+if (string.IsNullOrEmpty(jwtKey) ||
+    string.IsNullOrEmpty(jwtIssuer) ||
+    string.IsNullOrEmpty(jwtAudience))
+{
+    throw new InvalidOperationException("La configuration JWT (Key, Issuer, Audience) est manquante.");
+}
+
+// JWT Authentication & Authorization
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+});
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -104,6 +169,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapStaticAssets();
 app.MapControllerRoute(

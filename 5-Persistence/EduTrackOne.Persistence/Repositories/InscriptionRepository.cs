@@ -31,7 +31,9 @@ namespace EduTrackOne.Persistence.Repositories
         public async Task<Inscription?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var insc = await _context.Inscriptions
-        .FirstOrDefaultAsync(i => i.Id == id, cancellationToken);
+            .Include(i => i.Notes)       // nécessite un mapping HasMany
+            .Include(i => i.Presences)  // de même
+            .FirstOrDefaultAsync(i => i.Id == id, cancellationToken);
 
             if (insc is not null)
             {
