@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace EduTrackOne.Contracts.DTOs
 {
-    public record CreateEleveDto(        
+    public record CreateEleveDto(
         string Prenom,
         string Nom,
         DateTime DateNaissance,

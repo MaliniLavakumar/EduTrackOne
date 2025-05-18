@@ -1,0 +1,41 @@
+﻿@model EduTrackOne.Contracts.DTOs.CreateClasseDto
+@{
+    ViewData["Title"] = "Créer une Classe";
+    Layout = "_Layout";
+}
+
+<h1>@ViewData["Title"]</h1>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="NomClasse" class="form-label"></label>
+        <input asp-for="NomClasse" class="form-control" />
+        <span asp-validation-for="NomClasse" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="AnneeScolaire" class="form-label"></label>
+        <input asp-for="AnneeScolaire" class="form-control" />
+        <span asp-validation-for="AnneeScolaire" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="IdEnseignantPrincipal" class="form-label">Enseignant Principal</label>
+        <select asp-for="IdEnseignantPrincipal" class="form-select" asp-items="ViewBag.Enseignants">
+            <option value="">-- Sélectionnez --</option>
+        </select>
+        <span asp-validation-for="IdEnseignantPrincipal" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Créer</button>
+    <a asp-action="Index" asp-controller="Home" class="btn btn-secondary ms-2">Annuler</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -20,4 +20,5 @@ namespace EduTrackOne.Application.Eleves
         string? Tel2,
         string NoImmatricule
         );
+
 }

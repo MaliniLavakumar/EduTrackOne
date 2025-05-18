@@ -1,0 +1,42 @@
+﻿using EduTrackOne.Application.Common;
+using EduTrackOne.Domain.Eleves;
+using MediatR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EduTrackOne.Application.Eleves.GetEleveByImmatricule
+{
+    public class GetEleveByImmatriculeHandler
+  : IRequestHandler<GetEleveByImmatriculeQuery, Result<EleveDto>>
+    {
+        private readonly IEleveRepository _repo;
+        public GetEleveByImmatriculeHandler(IEleveRepository repo) => _repo = repo;
+
+        public async Task<Result<EleveDto>> Handle(
+          GetEleveByImmatriculeQuery request,
+          CancellationToken ct)
+        {
+            var eleve = await _repo.GetByNoImmatriculeAsync(request.NoImmatricule, ct);
+            if (eleve is null)
+                return Result<EleveDto>.Failure("Élève non trouvé.");
+
+            var dto = new EleveDto(
+                eleve.Id,
+                eleve.NomComplet.Prenom,
+                eleve.NomComplet.Nom,
+                eleve.DateNaissance.Value,
+                eleve.Sexe.ToString(),
+                eleve.Adresse.ToString(),
+                eleve.EmailParent.Value,
+                eleve.Tel1.Value,
+                eleve.Tel2?.Value,
+                eleve.NoImmatricule
+            );
+
+            return Result<EleveDto>.Success(dto);
+        }
+    }
+}

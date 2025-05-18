@@ -18,7 +18,7 @@ namespace EduTrackOne.Domain.Eleves
             Nom = nom;
         }
 
-        public override string ToString() => $"{Prenom} {Nom}";
+        public override string ToString() => $"{Prenom} {Nom}".Trim();
 
         protected override IEnumerable<object> GetEqualityComponents()
         {

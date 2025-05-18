@@ -9,17 +9,15 @@ using EduTrackOne.Domain.Utilisateurs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using EduTrackOne.Domain.Abstractions;
-using System.Security.Cryptography;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace EduTrackOne.Persistence
 {
-    public class EduTrackOneDbContext : DbContext
+    public class EduTrackOneDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
     {
         private readonly IMediator _mediator;
         public EduTrackOneDbContext(DbContextOptions<EduTrackOneDbContext> options)
@@ -233,48 +231,7 @@ namespace EduTrackOne.Persistence
                 b.OwnsOne(u => u.Role, vo => vo.Property(v => v.Valeur).HasColumnName("Role"));
                 b.OwnsOne(u => u.Statut, vo => vo.Property(v => v.Value).HasColumnName("Statut"));
             });
-            const string adminPassword = "Admin123!";
-            string adminHash;
-            using (var sha256 = SHA256.Create())
-            {
-                var bytes = Encoding.UTF8.GetBytes(adminPassword);
-                adminHash = Convert.ToBase64String(sha256.ComputeHash(bytes));
-
-            }
-
-            // Identifiant fixe pour l’admin
-            var adminId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
-
-            // 3. Seed de l’entité Utilisateur (sans owned types)
-            modelBuilder.Entity<Utilisateur>().HasData(new
-            {
-                Id = adminId,
-                Identifiant = "admin",
-                MotDePasseHash = adminHash
-            });
-
-            // 4. Seed de chaque owned type séparément
-
-            // ► RoleUtilisateur
-            modelBuilder.Entity<Utilisateur>().OwnsOne(u => u.Role).HasData(new
-            {
-                UtilisateurId = adminId,
-                Valeur = RoleUtilisateur.Role.Admin
-            });
-
-            // ► StatutUtilisateur
-            modelBuilder.Entity<Utilisateur>().OwnsOne(u => u.Statut).HasData(new
-            {
-                UtilisateurId = adminId,
-                Value = StatutUtilisateur.StatutEnum.Actif
-            });
-
-            // ► Email
-            modelBuilder.Entity<Utilisateur>().OwnsOne(u => u.Email).HasData(new
-            {
-                UtilisateurId = adminId,
-                Value = "admin@edutrackone.com"
-            });
+           
         }
     }
 }

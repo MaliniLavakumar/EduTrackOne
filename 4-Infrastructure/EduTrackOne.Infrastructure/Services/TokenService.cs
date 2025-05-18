@@ -21,24 +21,25 @@ namespace EduTrackOne.Infrastructure.Services
             _configuration = configuration;
         }
 
-        public string GenerateToken(Guid utilisateurId, string identifiant, RoleUtilisateur.Role role)
+        public string GenerateToken(Guid utilisateurId, string identifiant, IEnumerable<string> roles)
         {
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, utilisateurId.ToString()),
-                new Claim(ClaimTypes.Name, identifiant),
-                new Claim(ClaimTypes.Role, role.ToString())
-            };
+            var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, utilisateurId.ToString()),
+            new Claim(ClaimTypes.Name, identifiant)
+        };
 
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
+            // Ajoute chaque rôle en tant que ClaimTypes.Role
+            claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(2),
+                expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: creds
             );
 

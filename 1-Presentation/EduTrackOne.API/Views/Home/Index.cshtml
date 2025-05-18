@@ -1,8 +1,49 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using EduTrackOne.Application.Utilisateurs
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Tableau de bord";
+    Layout = "_Layout";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<h1>Bienvenue, @User.Identity.Name</h1>
+<h2>@Model.SchoolName</h2>
+
+@if (Model.IsAdmin)
+{
+    <p>Vous êtes administrateur. Utilisez le menu pour gérer l’application.</p>
+}
+else
+{
+
+    <h1>@ViewData["Title"]</h1>
+
+    <h2>Vos classes</h2>
+    @if (Model.ClassesToManage == null || !Model.ClassesToManage.Any())
+    {
+        <div class="alert alert-info">Aucune classe attribuée.</div>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nom de la classe</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model.ClassesToManage)
+                {
+                    <tr>
+                        <td>@c.NomClasse</td>
+                        <td>
+                            <a asp-controller="Classe" asp-action="Details" asp-route-id="@c.Id" class="btn btn-sm btn-primary">
+                                Voir
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}

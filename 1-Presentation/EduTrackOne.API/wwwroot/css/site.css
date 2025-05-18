@@ -29,3 +29,24 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+.login-container {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 30px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fafafa;
+}
+
+    .login-container h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+.login-form .form-group {
+    margin-bottom: 15px;
+}
+
+.login-form .btn {
+    width: 100%;
+}

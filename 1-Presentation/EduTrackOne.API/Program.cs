@@ -41,11 +41,13 @@ using System.Text.Json.Serialization;
 using EduTrackOne.Application.Utilisateurs.UpdateUser;
 using EduTrackOne.Application.Utilisateurs.ChangePassword;
 using EduTrackOne.Application.Utilisateurs.DeleteUser;
+using EduTrackOne.Application.Classes.GetClassesByEnseignantPrincipal;
+using Microsoft.AspNetCore.Identity;
+using EduTrackOne.Infrastructure.Identity;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddServiceDefaults();
 
 // Configuration du DbContext
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -55,6 +57,32 @@ builder.Services.AddDbContext<EduTrackOneDbContext>(options =>
     options.UseSqlServer(connectionString, sqlOptions =>
         sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null))
 );
+
+//Identity
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+{
+    options.Password.RequiredLength = 6;
+    options.User.RequireUniqueEmail = true;
+   
+})
+.AddEntityFrameworkStores<EduTrackOneDbContext>()
+.AddDefaultTokenProviders();
+
+// Cookie authentication (pour MVC)
+builder.Services.ConfigureApplicationCookie(opts =>
+{
+    opts.LoginPath = "/Utilisateur/Login";
+    opts.Cookie.Name = "EduTrackOne.Identity";
+    opts.Cookie.HttpOnly = true;
+    opts.ExpireTimeSpan = TimeSpan.FromHours(1);
+});
+
+// Authorization
+builder.Services.AddAuthorization();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 // Inscription des services de persistance et métier
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -68,19 +96,12 @@ builder.Services.AddScoped<IInscriptionManager, InscriptionManager>();
 builder.Services.AddScoped<IPresenceRepository, PresenceRepository>();
 builder.Services.AddScoped<IUtilisateurRepository, UtilisateurRepository>();
 
-
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
-builder.Services.AddScoped<ITokenService, TokenService>();
-
-
 // Activation de l’auto-validation FluentValidation
 builder.Services.AddControllersWithViews()
-  .AddJsonOptions(options =>
-  {
-      options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-      options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-  });
+    .AddJsonOptions(o => {
+        o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
 
@@ -100,9 +121,6 @@ builder.Services.AddValidatorsFromAssemblyContaining<CreateUserCommandValidator>
 builder.Services.AddValidatorsFromAssemblyContaining<UpdateUserCommandValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<ChangePasswordCommandValidator>();
 
-
-
-
 // MediatR
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssemblyContaining<CreateClasseCommandHandler>()
@@ -121,45 +139,18 @@ builder.Services.AddMediatR(cfg =>
        .RegisterServicesFromAssemblyContaining<UpdateUserCommandHandler>()
        .RegisterServicesFromAssemblyContaining<ChangePasswordCommandHandler>()
        .RegisterServicesFromAssemblyContaining<DeleteUserCommandHandler>()
+       .RegisterServicesFromAssemblyContaining<GetClassesByEnseignantPrincipalQueryHandler>());
 
-);
-// Lire la config
-var jwtKey = builder.Configuration["Jwt:Key"];
-var jwtIssuer = builder.Configuration["Jwt:Issuer"];
-var jwtAudience = builder.Configuration["Jwt:Audience"];
-
-if (string.IsNullOrEmpty(jwtKey) ||
-    string.IsNullOrEmpty(jwtIssuer) ||
-    string.IsNullOrEmpty(jwtAudience))
-{
-    throw new InvalidOperationException("La configuration JWT (Key, Issuer, Audience) est manquante.");
-}
-
-// JWT Authentication & Authorization
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-    };
-});
-builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-app.MapDefaultEndpoints();
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await IdentityDataInitializer.SeedUsersAsync(services);
+}
+
+//app.MapDefaultEndpoints();
 
 if (!app.Environment.IsDevelopment())
 {
@@ -168,13 +159,15 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapStaticAssets();
 app.MapControllerRoute(
-    "default",
-    "{controller=Home}/{action=Index}/{id?}"
+    name: "default",
+    pattern: "{controller=Utilisateur}/{action=Login}/{id?}"
 ).WithStaticAssets();
 
 app.Run();

@@ -36,5 +36,12 @@ namespace EduTrackOne.Persistence.Repositories
         {
             await _context.SaveChangesAsync();
         }
+        public async Task<List<EnseignantPrincipal>> GetByEmailAsync(string email, CancellationToken ct = default)
+        {
+            return await _context.EnseignantsPrincipaux
+                             .Include(ep => ep.Classes)    // suppose relation navigationnelle
+                             .Where(ep => ep.Email.Value == email)
+                             .ToListAsync(ct);
+        }
     }
 }

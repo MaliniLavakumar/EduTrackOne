@@ -1,0 +1,26 @@
+﻿@model EduTrackOne.Contracts.DTOs.LoginDto
+@{
+    ViewData["Title"] = "Connexion";
+    Layout = "_Layout";
+}
+
+<div class="login-container">
+    <h2>Connexion</h2>
+    @using (Html.BeginForm("Login", "Utilisateur", FormMethod.Post, new { @class = "login-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.Identifiant)
+            @Html.TextBoxFor(m => m.Identifiant, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Identifiant)
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.MotDePasse)
+            @Html.PasswordFor(m => m.MotDePasse, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.MotDePasse)
+        </div>
+        <button type="submit" class="btn btn-primary">Se connecter</button>
+    }
+</div>

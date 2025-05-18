@@ -9,7 +9,7 @@ namespace EduTrackOne.Application.Common.Interfaces
 {
     public interface ITokenService
     {
-        string GenerateToken(Guid utilisateurId, string identifiant, RoleUtilisateur.Role role);
+        string GenerateToken(Guid utilisateurId, string identifiant, IEnumerable<string>roles);
     }
 
 }

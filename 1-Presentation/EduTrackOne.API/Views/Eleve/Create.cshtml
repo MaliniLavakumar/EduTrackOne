@@ -1,0 +1,84 @@
+﻿@model EduTrackOne.Contracts.DTOs.CreateEleveDto
+@{
+    ViewData["Title"] = "Créer un Élève";
+    Layout = "_Layout";
+}
+
+<h1>@ViewData["Title"]</h1>
+@if (!ViewData.ModelState.IsValid)
+{
+    <div asp-validation-summary="All" class="alert alert-danger"></div>
+}
+<form asp-action="Create" method="post">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="Prenom" class="form-label"></label>
+            <input asp-for="Prenom" class="form-control" />
+            <span asp-validation-for="Prenom" class="text-danger"></span>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="Nom" class="form-label"></label>
+            <input asp-for="Nom" class="form-control" />
+            <span asp-validation-for="Nom" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label asp-for="DateNaissance" class="form-label"></label>
+        <input asp-for="DateNaissance" type="date" class="form-control" />
+        <span asp-validation-for="DateNaissance" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Sexe" class="form-label"></label>
+        <select asp-for="Sexe" class="form-select">
+            <option value="">-- Sexe --</option>
+            <option value="Fille">Fille</option>
+            <option value="Garçon">Garçon</option>
+        </select>
+        <span asp-validation-for="Sexe" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Rue" class="form-label"></label>
+        <input asp-for="Rue" class="form-control" />
+        <span asp-validation-for="Rue" class="text-danger"></span>
+    </div>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label asp-for="CodePostal" class="form-label"></label>
+            <input asp-for="CodePostal" class="form-control" />
+            <span asp-validation-for="CodePostal" class="text-danger"></span>
+        </div>
+        <div class="col-md-8 mb-3">
+            <label asp-for="Ville" class="form-label"></label>
+            <input asp-for="Ville" class="form-control" />
+            <span asp-validation-for="Ville" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label asp-for="EmailParent" class="form-label"></label>
+        <input asp-for="EmailParent" type="email" class="form-control" />
+        <span asp-validation-for="EmailParent" class="text-danger"></span>
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="Tel1" class="form-label"></label>
+            <input asp-for="Tel1" class="form-control" />
+            <span asp-validation-for="Tel1" class="text-danger"></span>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="Tel2" class="form-label"></label>
+            <input asp-for="Tel2" class="form-control" />
+            <span asp-validation-for="Tel2" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label asp-for="NoImmatricule" class="form-label">Numéro d'immatricule</label>
+        <input asp-for="NoImmatricule" class="form-control" />
+        <span asp-validation-for="NoImmatricule" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Créer</button>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary ms-2">Annuler</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
