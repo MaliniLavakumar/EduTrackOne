@@ -18,7 +18,10 @@ namespace EduTrackOne.Application.Inscriptions.AddPresencesForClasse
                 .NotEmpty().WithMessage("La date de présence est requise.");
 
             RuleFor(x => x.Periode)
-                .NotEmpty().WithMessage("La période est requise.");
+                .NotEmpty().WithMessage("La période est requise.")
+                .InclusiveBetween(1, 8)
+                .WithMessage("La période doit être comprise entre 1 et 8.");
+
 
             RuleFor(x => x.Presences)
             .NotEmpty().WithMessage("La liste des présences ne peut pas être vide.")

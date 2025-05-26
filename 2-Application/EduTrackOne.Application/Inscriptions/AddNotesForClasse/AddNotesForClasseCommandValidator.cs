@@ -29,8 +29,8 @@ namespace EduTrackOne.Application.Inscriptions.AddNotesForClasse
                      .NotEmpty().WithMessage("Chaque note doit avoir un MatiereId.");
 
                 notes.RuleFor(n => n.Valeur)
-                     .Must(v => v == null || (v >= 1 && v <= 6 && v % 0.5 == 0))
-                     .WithMessage("Si fournie, la valeur doit être entre 1 et 6 par pas de 0.5.");
+                     .Must(v => v!= -1 &&(v == null || (v >= 1 && v <= 6 && v % 0.5 == 0)))
+                     .WithMessage("Vous devez choisir 'Absent' ou une valeur entre 1 et 6 par pas de 0.5.");
             });
         }
 

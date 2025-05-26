@@ -1,0 +1,104 @@
+﻿@model EduTrackOne.Contracts.DTOs.UpdateEleveDto
+@{
+    ViewData["Title"] = "Modifier l'élève";
+    Layout = "_Layout";
+
+    // champs en lecture seule
+    var prenom = ViewData["Prenom"] as string;
+    var nom = ViewData["Nom"] as string;
+    var naissance = ViewData["Naissance"] as string;
+    var sexe = ViewData["Sexe"] as string;
+    var classeId = ViewData["ClasseId"] as Guid?;
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (!ViewData.ModelState.IsValid)
+{
+    <div asp-validation-summary="All" class="alert alert-danger"></div>
+}
+
+<form asp-action="Edit" asp-route-id="@Model.EleveId" asp-route-ClasseId="@classeId" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="EleveId" />
+
+    <fieldset disabled>
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Prénom</label>
+            <div class="col-sm-10">
+                <input class="form-control" value="@prenom" />
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Nom</label>
+            <div class="col-sm-10">
+                <input class="form-control" value="@nom" />
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Né(e) le</label>
+            <div class="col-sm-10">
+                <input type="date" class="form-control" value="@naissance" />
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">Sexe</label>
+            <div class="col-sm-10">
+                <input class="form-control" value="@sexe" />
+            </div>
+        </div>
+    </fieldset>
+
+    <div class="mb-3">
+        <label asp-for="Rue" class="form-label"></label>
+        <input asp-for="Rue" class="form-control" />
+        <span asp-validation-for="Rue" class="text-danger"></span>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label asp-for="CodePostal" class="form-label"></label>
+            <input asp-for="CodePostal" class="form-control" />
+            <span asp-validation-for="CodePostal" class="text-danger"></span>
+        </div>
+        <div class="col-md-8">
+            <label asp-for="Ville" class="form-label"></label>
+            <input asp-for="Ville" class="form-control" />
+            <span asp-validation-for="Ville" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Tel1" class="form-label"></label>
+        <input asp-for="Tel1" class="form-control" />
+        <span asp-validation-for="Tel1" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Tel2" class="form-label"></label>
+        <input asp-for="Tel2" class="form-control" />
+        <span asp-validation-for="Tel2" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="EmailParent" class="form-label"></label>
+        <input asp-for="EmailParent" class="form-control" />
+        <span asp-validation-for="EmailParent" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
+    @if (classeId.HasValue)
+    {
+        <a asp-controller="Classe"
+           asp-action="Details"
+           asp-route-id="@classeId"
+           class="btn btn-secondary ms-2">
+            <i class="bi bi-arrow-left"></i> Retour à la classe
+        </a>
+    }
+    else
+    {
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="btn btn-secondary ms-2">
+            <i class="bi bi-arrow-left"></i> Retour au dashboard
+        </a>
+    }
+       
+</form>

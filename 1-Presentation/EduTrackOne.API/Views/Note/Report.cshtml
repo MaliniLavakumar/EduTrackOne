@@ -1,0 +1,58 @@
+﻿@model BulletinViewModel
+@{
+    bool isPdf = ViewBag.IsPdf as bool? ?? false;
+    // Si on génère du PDF, on neutralise le layout
+    if (isPdf)
+    {
+        Layout = null;
+    }
+    else
+    {
+        Layout = "_Layout";
+    }
+    ViewData["Title"] = "Bulletin de " + Model.EleveName;
+}
+<h1>@Model.SchoolName</h1>
+<h2>Bulletin de Notes</h2>
+
+<dl class="row">
+    <dt class="col-sm-3">Classe</dt>
+    <dd class="col-sm-9">@Model.ClasseName</dd>
+    <dt class="col-sm-3">Élève</dt>
+    <dd class="col-sm-9">@Model.EleveName</dd>
+    <dt class="col-sm-3">Matricule</dt>
+    <dd class="col-sm-9">@Model.NoImmatricule</dd>
+</dl>
+
+<table class="table table-bordered">
+    <thead>
+        <tr><th>Matière</th><th>Moyenne</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var m in Model.Matieres)
+        {
+            <tr>
+                <td>@m.MatiereNom</td>
+                <td>@m.Moyenne.ToString("0.##")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (!isPdf)
+{
+    <div class="mt-4">
+        <a asp-action="ReportPdf"
+           asp-controller="Note"
+           asp-route-inscriptionId="@(ViewContext.RouteData.Values["inscriptionId"])"
+           class="btn btn-primary">
+            Télécharger le PDF
+        </a>
+        <a asp-action="GetNotes"
+           asp-controller="Note"
+           asp-route-inscriptionId="@(ViewContext.RouteData.Values["inscriptionId"] ?? "")"
+           class="btn btn-secondary ms-2">
+            &larr; Retour aux notes
+        </a>
+    </div>
+}

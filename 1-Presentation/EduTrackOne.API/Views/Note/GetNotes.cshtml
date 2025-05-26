@@ -1,0 +1,104 @@
+﻿@model EduTrackOne.Application.Common.PaginatedResult<EduTrackOne.Application.Notes.GetNotesByInscription.GetNotesByInscriptionDto>
+
+@{
+    string eleveName = ViewBag.EleveName as string ?? "l'élève";
+    ViewData["Title"] = $"Notes de {eleveName}";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="mt-4">
+    <a asp-action="Report"
+       asp-controller="Note"
+       asp-route-inscriptionId="@(ViewBag.InscriptionId)"
+       class="btn btn-outline-primary">
+        Voir le bulletin
+    </a>
+    <a asp-action="ReportPdf"
+       asp-controller="Note"
+       asp-route-inscriptionId="@(ViewBag.InscriptionId)"
+       class="btn btn-outline-success ms-2">
+        Télécharger PDF
+    </a>
+</div>
+
+<p>
+    <a asp-controller="Classe"
+       asp-action="Details"
+       asp-route-id="@(ViewBag.ClasseId)"
+       class="btn btn-secondary">
+        &larr; Retour à la classe
+    </a>
+</p>
+
+@foreach (var mat in Model.Items)
+{
+    <section class="mb-4">
+        <h2>@mat.MatiereNom <small>(moyenne : @mat.Moyenne.ToString("0.##"))</small></h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Note</th>
+                    <th>Absent</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var n in mat.Notes)
+                {
+                    <tr>
+                        <td>@n.DateExamen.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            @(n.EstAbsent
+                                ? "-"
+                                : n.Valeur?.ToString("0.##")
+                                ?? "-")
+                        </td>
+                        <td>@(n.EstAbsent ? "Oui" : "-")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+}
+@if (Model.TotalItems >0){
+<nav>
+    <ul class="pagination">
+        @if (Model.PageNumber > 1)
+        {
+            <li class="page-item">
+                <a class="page-link"
+                   asp-controller="Note"
+                   asp-action="GetNotes"
+                   asp-route-inscriptionId="@(ViewBag.InscriptionId)"
+                   asp-route-page="@(Model.PageNumber - 1)">
+                    Précédent
+                </a>
+            </li>
+        }
+        <li class="page-item disabled">
+            <span class="page-link">
+                Page @Model.PageNumber sur @((Model.TotalItems + Model.PageSize - 1) / Model.PageSize)
+            </span>
+        </li>
+        @if ((Model.PageNumber * Model.PageSize) < Model.TotalItems)
+        {
+            <li class="page-item">
+                <a class="page-link"
+                   asp-controller="Note"
+                   asp-action="GetNotes"
+                   asp-route-inscriptionId="@(ViewBag.InscriptionId)"
+                   asp-route-page="@(Model.PageNumber + 1)">
+                    Suivant
+                </a>
+            </li>
+        }
+    </ul>
+</nav>
+}
+else
+{
+<div class="alert alert-info">
+    Aucune note à afficher.
+</div>
+}

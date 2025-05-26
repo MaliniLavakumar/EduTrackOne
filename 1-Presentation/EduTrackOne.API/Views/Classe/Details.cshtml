@@ -6,15 +6,29 @@
 }
 
 <h1>@ViewData["Title"] : @Model.NomClasse</h1>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
 
 <div class="mb-3">
-    <a asp-action="Create" asp-controller="Inscription" asp-route-classeId="@Model.ClassId" class="btn btn-success me-2" data-bs-toggle="tooltip" title="Nouvelle inscription">
+    <a asp-action="CreateInscription" asp-controller="Classe" asp-route-classeId="@Model.ClassId" class="btn btn-success me-2" data-bs-toggle="tooltip" title="Nouvelle inscription">
         <i class="bi bi-person-plus"></i>
     </a>
-    <a asp-action="AddNotesForClasse" asp-controller="Classe" asp-route-classeId="@Model.ClassId" class="btn btn-primary me-2" data-bs-toggle="tooltip" title="Ajouter des notes">
+    <a asp-action="AddNotes" asp-controller="Classe" asp-route-classeId="@Model.ClassId" class="btn btn-primary me-2" data-bs-toggle="tooltip" title="Ajouter des notes">
         <i class="bi bi-journal-text"></i>
     </a>
-    <a asp-action="AddPresencesForClasse" asp-controller="Classe" asp-route-classeId="@Model.ClassId" class="btn btn-primary" data-bs-toggle="tooltip" title="Ajouter des présences">
+    <a asp-action="AddPresences" asp-controller="Classe" asp-route-classeId="@Model.ClassId" class="btn btn-primary" data-bs-toggle="tooltip" title="Ajouter des présences">
         <i class="bi bi-calendar-check"></i>
     </a>
 </div>
@@ -33,19 +47,29 @@
                 <td>@insc.EleveNom</td>
                 <td>
                     <div class="btn-group" role="group">
-                        <a asp-controller="Eleve" asp-action="Details" asp-route-id="@insc.EleveId" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Détails">
+                        <a asp-controller="Eleve" asp-action="Details" asp-route-id="@insc.EleveId" asp-route-classeId="@Model.ClassId" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Détails">
                             <i class="bi bi-eye"></i>
                         </a>
-                        <a asp-controller="Eleve" asp-action="Edit" asp-route-id="@insc.EleveId" class="btn btn-sm btn-outline-warning" data-bs-toggle="tooltip" title="Modifier">
+                        <a asp-controller="Eleve" asp-action="Edit" asp-route-id="@insc.EleveId" asp-route-classeId="@Model.ClassId" class="btn btn-sm btn-outline-warning" data-bs-toggle="tooltip" title="Modifier">
                             <i class="bi bi-pencil-square"></i>
                         </a>
-                        <a asp-controller="Eleve" asp-action="Delete" asp-route-id="@insc.EleveId" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Supprimer">
-                            <i class="bi bi-trash"></i>
-                        </a>
-                        <a asp-controller="Classe" asp-action="DetailsNotes" asp-route-id="@insc.InscriptionId" class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip" title="Voir des notes">
+                        <!-- Formulaire de suppression avec confirmation -->
+                        <form asp-action="DeleteInscription"
+                              asp-controller="Classe"
+                              asp-route-classeId="@Model.ClassId"
+                              asp-route-eleveId="@insc.EleveId"
+                              method="post"
+                              class="d-inline"
+                              onsubmit="return confirm('Voulez-vous vraiment supprimer l\'inscription de @insc.EleveNom ?');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Supprimer">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>    
+                        <a asp-controller="Note" asp-action="GetNotes" asp-route-inscriptionId="@insc.InscriptionId" class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip" title="Voir des notes">
                             <i class="bi bi-file-earmark-text"></i>
                         </a>
-                        <a asp-controller="Classe" asp-action="DetailsPresences" asp-route-id="@insc.InscriptionId" class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip" title="Voir des présences">
+                        <a asp-controller="Presence" asp-action="GetPresences" asp-route-inscriptionid="@insc.InscriptionId" class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip" title="Voir des présences">
                             <i class="bi bi-calendar2-week"></i>
                         </a>
                     </div>

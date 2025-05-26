@@ -1,0 +1,64 @@
+﻿@model EduTrackOne.Application.Presences.GetPresencesByInscriptionDto
+
+@{
+    // Si on est en PDF, on neutralise le layout
+    var path = ViewContext.HttpContext.Request.Path.Value ?? "";
+    bool isPdf = path.Contains("/Pdf/");
+    Layout = isPdf ? null : "_Layout";
+
+    var eleve = ViewBag.EleveName as string ?? "l'élève";
+    var classeId = ViewBag.ClasseId as Guid?;
+    var inscId = ViewBag.InscriptionId as Guid?;
+}
+
+<h1 style="text-align:center;">Présences de @eleve</h1>
+
+<div style="margin:20px 0; text-align:center;">
+    <h2>Périodes présentes : @Model.PeriodesPresentes </h2>
+</div>
+
+@if (Model.Absences.Any())
+{
+    <h2 style="margin-top:30px; text-align:center">Absences</h2>
+    <table style="width:80%; margin:auto; border-collapse:collapse;" border="1">
+        <thead>
+            <tr>
+                <th style="padding:8px;">Date</th>
+                <th style="padding:8px;">Période</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var a in Model.Absences)
+            {
+                <tr>
+                    <td style="padding:8px;">@a.Date.ToString("dd/MM/yyyy")</td>
+                    <td style="padding:8px; text-align:center;">@a.Periode</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div style="margin:20px; text-align:center; color:gray;">
+        Aucune absence enregistrée.
+    </div>
+}
+
+@if (!isPdf)
+{
+    <div style="text-align:center; margin-top:30px;">
+        <a asp-action="Pdf"
+           asp-controller="Presence"
+           asp-route-inscriptionId="@inscId"
+           class="btn btn-primary me-2">
+            Télécharger le PDF
+        </a>
+        <a asp-action="Details"
+           asp-controller="Classe"
+           asp-route-id="@classeId"
+           class="btn btn-secondary">
+            &larr; Retour à la classe
+        </a>
+    </div>
+}

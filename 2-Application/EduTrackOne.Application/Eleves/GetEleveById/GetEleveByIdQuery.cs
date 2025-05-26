@@ -1,4 +1,5 @@
 ﻿using EduTrackOne.Application.Common;
+using EduTrackOne.Contracts.DTOs;
 using MediatR;
 using System;
 using System.Collections.Generic;

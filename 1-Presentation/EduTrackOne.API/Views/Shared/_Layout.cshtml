@@ -25,10 +25,18 @@
                     <ul class="navbar-nav flex-grow-1">
                         @if (User.IsInRole("Admin"))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="Users" asp-action="GetAll">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="usersDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Utilisateurs
                                 </a>
+                                <ul class="dropdown-menu" aria-labelledby="usersDropdown">
+                                    <li><a class="dropdown-item" asp-controller="User" asp-action="Index">Liste</a></li>
+                                    <li><a class="dropdown-item" asp-controller="User" asp-action="Create">Créer un utilisateur</a></li>
+                                    <li><a class="dropdown-item" asp-controller="User" asp-action="Edit">Modifier un utilisateur</a></li>
+                                    <li><a class="dropdown-item" asp-controller="User" asp-action="ChangePassword">Changer le Mot de Passe</a></li>
+                                    <li><a class="dropdown-item" asp-controller="User" asp-action="Delete">Supprimer un utilisateur</a></li>
+
+                                </ul>
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="classesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -45,7 +53,7 @@
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="elevesDropdown">
                                     <li><a class="dropdown-item" asp-controller="Eleve" asp-action="Index">Liste</a></li>
-                                    <li><a class="dropdown-item" asp-controller="Eleve" asp-action="Create">Créer une Classe</a></li>
+                                    <li><a class="dropdown-item" asp-controller="Eleve" asp-action="Create">Créer un Élève</a></li>
                                 </ul>
                             </li>
                             <li class="nav-item dropdown">
@@ -64,6 +72,9 @@
                                 <a class="nav-link" asp-controller="Home" asp-action="Index">
                                     Mon Dashboard
                                 </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Profil" asp-action="ChangePassword">Changer mot de passe</a>
                             </li>
                         }
                         <li class="nav-item">

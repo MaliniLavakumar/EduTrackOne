@@ -1,0 +1,28 @@
+﻿@model EduTrackOne.Application.Utilisateurs.GetAllUsers.GetAllUsersDto
+
+@{
+    ViewData["Title"] = "Détails de l’utilisateur";
+}
+
+<h1>Détails de « @Model.Identifiant »</h1>
+
+<dl class="row">
+    <dt class="col-sm-2">Identifiant</dt>
+    <dd class="col-sm-10">@Model.Identifiant</dd>
+
+    <dt class="col-sm-2">Email</dt>
+    <dd class="col-sm-10">@Model.Email</dd>
+
+    <dt class="col-sm-2">Rôle</dt>
+    <dd class="col-sm-10">@Model.Role</dd>
+
+    <dt class="col-sm-2">Statut</dt>
+    <dd class="col-sm-10">@Model.Statut</dd>
+</dl>
+
+<div class="mt-3">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Modifier</a>
+    <a asp-action="ChangePassword" asp-route-id="@Model.Id" class="btn btn-secondary ms-2">Mot de passe</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger ms-2">Supprimer</a>
+    <a asp-action="Index" class="btn btn-link ms-4">← Retour à la liste</a>
+</div>

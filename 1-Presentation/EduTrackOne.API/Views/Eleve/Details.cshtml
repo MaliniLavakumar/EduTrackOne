@@ -1,0 +1,50 @@
+﻿@model EduTrackOne.Contracts.DTOs.EleveDto
+@{
+    ViewData["Title"] = "Détails de l'élève";
+    Layout = "_Layout";
+    var classeId = ViewData["ClasseId"] as Guid?;
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Prénom</dt>
+            <dd class="col-sm-9">@Model.Prenom</dd>
+
+            <dt class="col-sm-3">Nom</dt>
+            <dd class="col-sm-9">@Model.Nom</dd>
+
+            <dt class="col-sm-3">Date de naissance</dt>
+            <dd class="col-sm-9">@Model.DateNaissance.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-3">Sexe</dt>
+            <dd class="col-sm-9">@Model.Sexe</dd>
+
+            <dt class="col-sm-3">Adresse</dt>
+            <dd class="col-sm-9">@Model.Adresse</dd>
+
+            <dt class="col-sm-3">Email du parent</dt>
+            <dd class="col-sm-9">@Model.EmailParent</dd>
+
+            <dt class="col-sm-3">Téléphone principal</dt>
+            <dd class="col-sm-9">@Model.Tel1</dd>
+
+            @if (!string.IsNullOrEmpty(Model.Tel2))
+            {
+                <dt class="col-sm-3">Téléphone secondaire</dt>
+                <dd class="col-sm-9">@Model.Tel2</dd>
+            }
+
+            <dt class="col-sm-3">N° d'immatricule</dt>
+            <dd class="col-sm-9">@Model.NoImmatricule</dd>
+        </dl>
+        <a asp-controller="Eleve" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+            <i class="bi bi-pencil-square"></i> Modifier
+        </a>
+        <a asp-controller="Classe" asp-action="Details" asp-route-id ="@classeId" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
+</div>

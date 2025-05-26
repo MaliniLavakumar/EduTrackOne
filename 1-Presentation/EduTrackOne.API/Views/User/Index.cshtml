@@ -1,0 +1,38 @@
+﻿@model IEnumerable<EduTrackOne.Application.Utilisateurs.GetAllUsers.GetAllUsersDto>;
+
+@{
+    ViewData["Title"] = "Utilisateurs";
+}
+
+<h1>Gestion des utilisateurs</h1>
+<p>
+    <a asp-controller="User" asp-action="Create" class="btn btn-success">Créer un utilisateur</a>
+</p>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Login</th>
+            <th>Email</th>
+            <th>Rôle</th>
+            <th>Statut</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@u.Identifiant</td>
+                <td>@u.Email</td>
+                <td>@u.Role</td>
+                <td>@u.Statut</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@u.Id" class="btn btn-sm btn-info">Voir</a>
+                    <a asp-controller="User" asp-action="Edit" asp-route-id="@u.Id" class="btn btn-sm btn-warning">Modifier</a>
+                    <a asp-action="ChangePassword" asp-route-id="@u.Id" class="btn btn-sm btn-secondary">Mot de passe</a>
+                    <a asp-action="Delete" asp-route-id="@u.Id" class="btn btn-sm btn-danger">Supprimer</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

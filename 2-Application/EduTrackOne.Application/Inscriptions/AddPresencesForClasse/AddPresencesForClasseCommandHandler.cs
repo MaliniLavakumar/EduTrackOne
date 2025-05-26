@@ -57,6 +57,7 @@ namespace EduTrackOne.Application.Inscriptions.AddPresencesForClasse
                     continue; // élève non renseigné
 
                 var presenceId = Guid.NewGuid();
+                lastPresenceId = presenceId;
                 var statut = presenceEleve.Statut == "Present"
                     ? new StatutPresence(StatutPresence.StatutEnum.Present)
                     : new StatutPresence(StatutPresence.StatutEnum.Absent);
@@ -74,7 +75,7 @@ namespace EduTrackOne.Application.Inscriptions.AddPresencesForClasse
                 count++;
             }
             await _uow.SaveChangesAsync(ct);
-            return lastPresenceId.HasValue
+            return count>0
             ? Result<int>.Success(count)
             : Result<int>.Failure("Aucune présence créée.");
         }

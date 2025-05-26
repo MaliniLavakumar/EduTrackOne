@@ -1,0 +1,67 @@
+﻿@model EduTrackOne.API.Models.PresencesForClasseViewModel
+@{
+    ViewData["Title"] = "Ajouter des présences";
+}
+
+<h1>@ViewData["Title"]</h1>
+@if (!ViewData.ModelState.IsValid)
+{
+    <div asp-validation-summary="All" class="alert alert-danger"></div>
+}
+
+<form asp-action="AddPresences"
+      asp-route-classeId="@Model.ClasseId"
+      method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="ClasseId" />
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label asp-for="Date" class="form-label">Date</label>
+            <input asp-for="Date" type="date" class="form-control" />
+            <span asp-validation-for="Date" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="Periode" class="form-label">Période</label>
+            <input asp-for="Periode"
+                   type="number"
+                   min="1" max="8" step="1"
+                   class="form-control" />
+            <span asp-validation-for="Periode" class="text-danger"></span>
+        </div>
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Élève</th>
+                <th>Présent / Absent</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Presences.Count; i++)
+            {
+                <tr>
+                    <td>
+                        <input type="hidden" asp-for="Presences[@i].EleveId" />
+                        @Model.Presences[i].EleveName
+                    </td>
+                    <td>
+                        <select asp-for="Presences[@i].Statut" class="form-select">
+                            <option value="Present" selected>Présent</option>
+                            <option value="Absent">Absent</option>
+                        </select>
+                        <span asp-validation-for="Presences[@i].Statut" class="text-danger"></span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-primary">Enregistrer les présences</button>
+    <a asp-action="Details" asp-route-id="@Model.ClasseId" class="btn btn-secondary ms-2">Annuler</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

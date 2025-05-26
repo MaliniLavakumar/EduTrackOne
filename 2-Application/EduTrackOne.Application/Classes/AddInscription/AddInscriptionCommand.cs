@@ -11,6 +11,7 @@ namespace EduTrackOne.Application.Classes.AddInscription
    public record AddInscriptionCommand(Guid ClasseId,
         string NoImmatricule,
         DateTime DateDebut,
-        DateTime? DateFin) : IRequest<Result<Guid>>;
+        DateTime? DateFin
+        ) : IRequest<Result<Guid>>;
     
 }

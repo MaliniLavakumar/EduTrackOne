@@ -1,0 +1,100 @@
+﻿@model EduTrackOne.API.Models.NotesForClasseViewModel
+@{
+    ViewData["Title"] = "Ajouter des notes";
+}
+
+<h1>@ViewData["Title"]</h1>
+@if (!ViewData.ModelState.IsValid)
+{
+    <div asp-validation-summary="All" class="alert alert-danger"></div>
+}
+
+<form asp-action="AddNotes" asp-route-classeId="@Model.ClasseId" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="ClasseId" />
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label asp-for="DateExamen" class="form-label">Date d'examen</label>
+            <input asp-for="DateExamen" type="date" class="form-control" />
+            <span asp-validation-for="DateExamen" class="text-danger"></span>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="SelectedMatiereId" class="form-label">Matière</label>
+            <select asp-for="SelectedMatiereId" class="form-select" asp-items="Model.Matieres">
+                <option value="" disabled selected>-- Choisir --</option>
+            </select>
+            <span asp-validation-for="SelectedMatiereId" class="text-danger"></span>
+        </div>
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Élève</th>
+                <th>Note</th>
+                <th>Commentaire</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Notes.Count; i++)
+            {
+                <tr>
+                    <td>
+                        <input type="hidden" asp-for="Notes[@i].EleveId" />
+                        @Model.Notes[i].EleveName
+                    </td>
+                    <td>
+                        <select asp-for="Notes[@i].Valeur" class="form-select" asp-items="null">
+                            <!-- 1) SENTINELLE : value = -1, REMARQUE : on n'ajoute PAS disabled -->
+                            @if (Model.Notes[i].Valeur == -1)
+                            {
+                                <option value="-1" selected>– Sélectionner une note –</option>
+                            }
+                            else
+                            {
+                                <option value="-1">– Sélectionner une note –</option>
+                            }
+
+                            <!-- 2) Absent -->
+                            @if (Model.Notes[i].Valeur == 0)
+                            {
+                                <option value="0" selected>Absent</option>
+                            }
+                            else
+                            {
+                                <option value="0">Absent</option>
+                            }
+
+                            <!-- 3) Notes 1 à 6 -->
+                            @for (double v = 1; v <= 6; v += 0.5)
+                            {
+                                if (Model.Notes[i].Valeur == v)
+                                {
+                                    <option value="@v" selected>@v</option>
+                                }
+                                else
+                                {
+                                    <option value="@v">@v</option>
+                                }
+                            }
+                        </select>
+
+                        <span asp-validation-for="Notes[@i].Valeur" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input asp-for="Notes[@i].Commentaire" class="form-control commentaire-input-@i" />
+                        <span asp-validation-for="Notes[@i].Commentaire" class="text-danger"></span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-primary">Enregistrer les notes</button>
+    <a asp-action="Details" asp-route-id="@Model.ClasseId" class="btn btn-secondary ms-2">Annuler</a>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+}

@@ -59,6 +59,8 @@ namespace EduTrackOne.API.Controllers.Mvc
             await _signIn.SignOutAsync();
             return RedirectToAction("Login");
         }
+
+
     }
 }
 

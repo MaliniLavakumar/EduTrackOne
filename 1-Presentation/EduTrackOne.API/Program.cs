@@ -1,49 +1,43 @@
+using EduTrackOne.Application.Classes.AddInscription;
 using EduTrackOne.Application.Classes.CreateClasse;
+using EduTrackOne.Application.Classes.DeleteClasse;
+using EduTrackOne.Application.Classes.GetClassesByEnseignantPrincipal;
+using EduTrackOne.Application.Classes.RemoveInscription;
+using EduTrackOne.Application.Common.Interfaces;
+using EduTrackOne.Application.Eleves.CreateEleve;
+using EduTrackOne.Application.Eleves.UpdateEleve;
+using EduTrackOne.Application.EnseignantsPrincipaux.CreateEnseignantPrincipal;
+using EduTrackOne.Application.Inscriptions.AddNotesForClasse;
+using EduTrackOne.Application.Inscriptions.AddPresencesForClasse;
+using EduTrackOne.Application.Inscriptions.GetInscriptionsByClasse;
+using EduTrackOne.Application.Inscriptions.Services;
+using EduTrackOne.Application.Inscriptions.UpdateNote;
+using EduTrackOne.Application.Inscriptions.UpdatePresence;
+using EduTrackOne.Application.Matieres.CreateMatiere;
+using EduTrackOne.Application.Matieres.GetAllMatieres;
+using EduTrackOne.Application.Utilisateurs.ChangePassword;
+using EduTrackOne.Application.Utilisateurs.CreateUser;
+using EduTrackOne.Application.Utilisateurs.DeleteUser;
+using EduTrackOne.Application.Utilisateurs.UpdateUser;
 using EduTrackOne.Domain.Abstractions;
 using EduTrackOne.Domain.Classes;
+using EduTrackOne.Domain.Eleves;
 using EduTrackOne.Domain.EnseignantsPrincipaux;
+using EduTrackOne.Domain.Inscriptions;
+using EduTrackOne.Domain.Matieres;
+using EduTrackOne.Domain.Notes;
+using EduTrackOne.Domain.Presences;
+using EduTrackOne.Domain.Utilisateurs;
+using EduTrackOne.Infrastructure.Identity;
+using EduTrackOne.Infrastructure.Services;
 using EduTrackOne.Persistence;
 using EduTrackOne.Persistence.Repositories;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using EduTrackOne.Application.Classes.DeleteClasse;
-using EduTrackOne.Application.EnseignantsPrincipaux.CreateEnseignantPrincipal;
-using EduTrackOne.Domain.Eleves;
-using EduTrackOne.Application.Eleves.CreateEleve;
-using EduTrackOne.Application.Eleves.UpdateEleve;
-using EduTrackOne.Application.Classes.AddInscription;
-using EduTrackOne.Domain.Inscriptions;
-using Microsoft.Data.SqlClient;
-using EduTrackOne.Application.Classes.RemoveInscription;
-using EduTrackOne.Application.Matieres.CreateMatiere;
-using EduTrackOne.Application.Inscriptions.GetInscriptionsByClasse;
-using EduTrackOne.Domain.Matieres;
-using EduTrackOne.Application.Inscriptions.Services;
-using EduTrackOne.Application.Inscriptions.AddNotesForClasse;
-using EduTrackOne.Domain.Notes;
-using EduTrackOne.Domain.Presences;
-using EduTrackOne.Application.Inscriptions.AddPresencesForClasse;
-using EduTrackOne.Application.Inscriptions.UpdateNote;
-using EduTrackOne.Application.Inscriptions.UpdatePresence;
-using EduTrackOne.Application.Common.Interfaces;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
-using EduTrackOne.Infrastructure.Services;
-using EduTrackOne.Domain.Utilisateurs;
-using EduTrackOne.Application.Utilisateurs.CreateUser;
-using System.Net;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using System.Text.Json.Serialization;
-using EduTrackOne.Application.Utilisateurs.UpdateUser;
-using EduTrackOne.Application.Utilisateurs.ChangePassword;
-using EduTrackOne.Application.Utilisateurs.DeleteUser;
-using EduTrackOne.Application.Classes.GetClassesByEnseignantPrincipal;
 using Microsoft.AspNetCore.Identity;
-using EduTrackOne.Infrastructure.Identity;
+using Microsoft.EntityFrameworkCore;
+using Rotativa.AspNetCore;
+using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -112,6 +106,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<UpdateEleveCommandValidator
 builder.Services.AddValidatorsFromAssemblyContaining<AddInscriptionCommandValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<RemoveInscriptionCommandValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateMatiereCommandValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<GetAllMatieresQueryHandler>();
 builder.Services.AddValidatorsFromAssemblyContaining<GetInscriptionsByClasseQueryValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<AddNotesForClasseCommandValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<AddPresencesForClasseCommandValidator>();
@@ -143,6 +138,7 @@ builder.Services.AddMediatR(cfg =>
 
 
 var app = builder.Build();
+RotativaConfiguration.Setup(app.Environment.WebRootPath, "Rotativa");
 
 using (var scope = app.Services.CreateScope())
 {
