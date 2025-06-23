@@ -13,37 +13,41 @@
 
 <h1 style="text-align:center;">Présences de @eleve</h1>
 
-<div style="margin:20px 0; text-align:center;">
-    <h2>Périodes présentes : @Model.PeriodesPresentes </h2>
-</div>
-
-@if (Model.Absences.Any())
-{
-    <h2 style="margin-top:30px; text-align:center">Absences</h2>
-    <table style="width:80%; margin:auto; border-collapse:collapse;" border="1">
-        <thead>
-            <tr>
-                <th style="padding:8px;">Date</th>
-                <th style="padding:8px;">Période</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var a in Model.Absences)
-            {
-                <tr>
-                    <td style="padding:8px;">@a.Date.ToString("dd/MM/yyyy")</td>
-                    <td style="padding:8px; text-align:center;">@a.Periode</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <div style="margin:20px; text-align:center; color:gray;">
-        Aucune absence enregistrée.
+<div class="container">
+    <div class="row justify-content-center my-4">
+        <div class="col-12 col-md-10 text-center">
+            <h2>Périodes présentes : @Model.PeriodesPresentes</h2>
+        </div>
     </div>
-}
+
+    @if (Model.Absences.Any())
+    {
+        <h2 class="mt-5 text-center">Absences</h2>
+        <table class="table table-bordered table-striped mx-auto" style="width:100%; max-width:800px;">
+            <thead>
+                <tr>
+                    <th class="px-3">Date</th>
+                    <th class="px-3">Période</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var a in Model.Absences)
+                {
+                    <tr>
+                        <td class="px-3">@a.Date.ToString("dd/MM/yyyy")</td>
+                        <td class="px-3">@a.Periode</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-secondary text-center my-4">
+            Aucune absence enregistrée.
+        </div>
+    }
+</div>
 
 @if (!isPdf)
 {

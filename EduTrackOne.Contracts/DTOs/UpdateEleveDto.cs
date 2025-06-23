@@ -14,6 +14,6 @@ namespace EduTrackOne.Contracts.DTOs
         string Ville,
         string Tel1,
         string? Tel2,
-        string EmailParent
+        string EmailParent       
         );
 }

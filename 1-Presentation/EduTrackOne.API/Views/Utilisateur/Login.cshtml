@@ -1,7 +1,7 @@
 ﻿@model EduTrackOne.Contracts.DTOs.LoginDto
 @{
     ViewData["Title"] = "Connexion";
-    Layout = "_Layout";
+    Layout ="_layout";
 }
 
 <div class="login-container">
@@ -13,14 +13,17 @@
 
         <div class="form-group">
             @Html.LabelFor(m => m.Identifiant)
-            @Html.TextBoxFor(m => m.Identifiant, new { @class = "form-control" })
+            @Html.TextBoxFor(m => m.Identifiant, new { @class = "form-control login-input" })
             @Html.ValidationMessageFor(m => m.Identifiant)
         </div>
         <div class="form-group">
             @Html.LabelFor(m => m.MotDePasse)
-            @Html.PasswordFor(m => m.MotDePasse, new { @class = "form-control" })
+            @Html.PasswordFor(m => m.MotDePasse, new { @class = "form-control login-input" })
             @Html.ValidationMessageFor(m => m.MotDePasse)
         </div>
-        <button type="submit" class="btn btn-primary">Se connecter</button>
+        <button type="submit" class="btn-login">Se connecter</button>
     }
 </div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

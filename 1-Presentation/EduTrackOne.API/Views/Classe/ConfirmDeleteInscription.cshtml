@@ -1,0 +1,34 @@
+﻿@model EduTrackOne.Contracts.DTOs.EleveDto
+@{
+    var classeId = ViewData["ClasseId"];
+    ViewData["Title"] = "Confirmer la suppression";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <h2 class="mb-4">@ViewData["Title"]</h2>
+
+            <p class="mb-4">Voulez-vous vraiment supprimer l’inscription de l’élève suivant ?</p>
+
+            <ul class="list-unstyled mb-4">
+                <li><strong>Nom :</strong> @Model.Prenom @Model.Nom</li>
+                <li><strong>No Immatricule :</strong> @Model.NoImmatricule</li>
+            </ul>
+
+            <form asp-action="DeleteInscription"
+                  asp-controller="Classe"
+                  asp-route-classeId="@classeId"
+                  asp-route-eleveId="@Model.Id"
+                  method="post"
+                  class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-danger me-2">Oui, supprimer</button>
+            </form>
+
+            <a asp-action="Details"
+               asp-route-id="@classeId"
+               class="btn btn-secondary">Annuler</a>
+        </div>
+    </div>
+</div>

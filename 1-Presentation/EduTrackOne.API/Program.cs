@@ -35,17 +35,36 @@ using EduTrackOne.Persistence.Repositories;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Rotativa.AspNetCore;
+using Serilog;
 using System.Text.Json.Serialization;
+using System.Threading.Channels;
 
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = new ConfigurationBuilder()
+    .SetBasePath(builder.Environment.ContentRootPath)
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables()
+    .Build();
+
+// Initialiser Log.Logger AVANT la création du host final pour capter les logs startup
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(configuration)
+    .Enrich.FromLogContext()
+    .CreateLogger();
+
+// Remplacer le logger par défaut d’ASP.NET Core par Serilog
+builder.Host.UseSerilog();
 
 
 // Configuration du DbContext
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    .Replace("${SA_PASSWORD}", Environment.GetEnvironmentVariable("SA_PASSWORD"));
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    
 
 builder.Services.AddDbContext<EduTrackOneDbContext>(options =>
     options.UseSqlServer(connectionString, sqlOptions =>
@@ -61,6 +80,11 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 })
 .AddEntityFrameworkStores<EduTrackOneDbContext>()
 .AddDefaultTokenProviders();
+builder.Services.AddScoped<IPasswordHasher<Utilisateur>, PasswordHasher<Utilisateur>>();
+builder.Services.Configure<PasswordHasherOptions>(options =>
+{
+    options.IterationCount = 100_000;
+});
 
 // Cookie authentication (pour MVC)
 builder.Services.ConfigureApplicationCookie(opts =>
@@ -69,6 +93,8 @@ builder.Services.ConfigureApplicationCookie(opts =>
     opts.Cookie.Name = "EduTrackOne.Identity";
     opts.Cookie.HttpOnly = true;
     opts.ExpireTimeSpan = TimeSpan.FromHours(1);
+    opts.SlidingExpiration = false;
+    opts.Cookie.SameSite = SameSiteMode.Lax;
 });
 
 // Authorization
@@ -91,10 +117,21 @@ builder.Services.AddScoped<IPresenceRepository, PresenceRepository>();
 builder.Services.AddScoped<IUtilisateurRepository, UtilisateurRepository>();
 
 // Activation de l’auto-validation FluentValidation
-builder.Services.AddControllersWithViews()
-    .AddJsonOptions(o => {
-        o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+builder.Services.AddControllersWithViews(options =>
+{
+    // Configuration MVC : ajout du filtre global no-cache
+    options.Filters.Add(new ResponseCacheAttribute
+    {
+        NoStore = true,
+        Location = ResponseCacheLocation.None
     });
+})
+.AddJsonOptions(o =>
+{
+    // Configuration JSON : convertisseur d’énumérations en string
+    o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
 
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
@@ -138,13 +175,31 @@ builder.Services.AddMediatR(cfg =>
 
 
 var app = builder.Build();
-RotativaConfiguration.Setup(app.Environment.WebRootPath, "Rotativa");
 
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    await IdentityDataInitializer.SeedUsersAsync(services);
+    var logger = services.GetRequiredService<ILogger<Program>>();
+   
+   
+    
+    try
+    {
+        logger.LogInformation("Démarrage du seed Identity...");
+        await IdentityDataInitializer.SeedUsersAsync(services);
+        logger.LogInformation("Seed Identity terminé.");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Erreur pendant le seed Identity. L’application continue.");
+    }
 }
+
+app.MapGet("/health", () => Results.Ok("API OK"));
+
+RotativaConfiguration.Setup(app.Environment.WebRootPath, "Rotativa");
+
+
 
 //app.MapDefaultEndpoints();
 

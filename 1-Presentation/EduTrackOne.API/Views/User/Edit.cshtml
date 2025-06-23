@@ -7,7 +7,7 @@
 
 }
 
-<h1>Modifier « @Model.Identifiant »</h1>
+<h1 class="text-center">Modifier les détails de @Model.Identifiant</h1>
 <form asp-controller="User" asp-action="Edit" asp-route-id="@Model.Id" method="post">
     @* Hidden pour l'Id *@
     <input type="hidden" asp-for="Id" />

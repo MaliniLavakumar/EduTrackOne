@@ -15,10 +15,14 @@ namespace EduTrackOne.API.Controllers.Mvc
     public class ProfilController : Controller
     {
         private readonly IMediator _mediator;
+        private readonly ILogger<ProfilController> _logger;
 
-        public ProfilController(IMediator mediator)
-            => _mediator = mediator;
-
+        public ProfilController(IMediator mediator,ILogger<ProfilController> logger)
+        {
+            _mediator = mediator;
+            _logger = logger;
+        }
+           
         [HttpGet("ChangePassword")]
         public IActionResult ChangePassword()
         {
@@ -40,19 +44,38 @@ namespace EduTrackOne.API.Controllers.Mvc
         {
             var currentUserId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
             if (vm.UserId != currentUserId)
-                return Unauthorized(); 
+            {
+                _logger.LogWarning("Tentative non autorisée de changer le mot de passe. UserId soumis: {SubmittedId}, UserId connecté: {CurrentId}", vm.UserId, currentUserId);
+                return Unauthorized();
+            }
 
-            if (!ModelState.IsValid) return View("~/Views/User/ChangePassword.cshtml", vm);
 
-            var cmd = new ChangePasswordCommand(new ChangePasswordDto(
-                UserId: vm.UserId,
-                AncienMotDePasse: vm.AncienMotDePasse,
-                NouveauMotDePasse: vm.NouveauMotDePasse
-            ));
+            if (!ModelState.IsValid)
+            {
+                _logger.LogInformation("Changement de mot de passe refusé pour {UserId} : modèle invalide.", currentUserId);
+                return View("~/Views/User/ChangePassword.cshtml", vm);
+            }
 
-            await _mediator.Send(cmd);
-            TempData["SuccessMessage"] = "Votre mot de passe a été modifié avec succès.";
-            return RedirectToAction("ChangePassword"); 
+            try
+            {
+                var cmd = new ChangePasswordCommand(new ChangePasswordDto(
+                    UserId: vm.UserId,
+                    AncienMotDePasse: vm.AncienMotDePasse,
+                    NouveauMotDePasse: vm.NouveauMotDePasse
+                ));
+
+                await _mediator.Send(cmd);
+
+                _logger.LogInformation("Mot de passe modifié avec succès pour l'utilisateur {UserId}", currentUserId);
+                TempData["SuccessMessage"] = "Votre mot de passe a été modifié avec succès.";
+                return RedirectToAction("ChangePassword");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Erreur inattendue lors du changement de mot de passe pour l'utilisateur {UserId}", currentUserId);
+                ModelState.AddModelError(string.Empty, "Une erreur est survenue. Veuillez réessayer.");
+                return View("~/Views/User/ChangePassword.cshtml", vm);
+            }
         }
     }
 }

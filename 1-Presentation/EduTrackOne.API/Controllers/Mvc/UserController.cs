@@ -1,4 +1,5 @@
 ﻿using EduTrackOne.API.Models;
+using EduTrackOne.Application.Common;
 using EduTrackOne.Application.Utilisateurs.ChangePassword;
 using EduTrackOne.Application.Utilisateurs.CreateUser;
 using EduTrackOne.Application.Utilisateurs.DeleteUser;
@@ -19,14 +20,17 @@ namespace EduTrackOne.API.Controllers.Mvc
         private readonly IMediator _mediator;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(IMediator mediator, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager)
+
+        public UserController(IMediator mediator, UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, ILogger<UserController> logger)
         {
             _mediator = mediator;
             _userManager = userManager;
             _roleManager = roleManager;
+            _logger = logger;
         }
-        
+
 
         // GET: /User
         [HttpGet("")]
@@ -43,7 +47,11 @@ namespace EduTrackOne.API.Controllers.Mvc
             // on peut réutiliser GetAll puis FirstOrDefault, ou implémenter GetByIdQuery
             var users = await _mediator.Send(new GetAllUsersQuery());
             var vm = users.FirstOrDefault(u => u.Id == id);
-            if (vm == null) return NotFound();
+            if (vm == null)
+            {
+                _logger.LogWarning("Utilisateur introuvable (ID: {UserId})", id);
+                return NotFound();
+            }
             return View(vm);
         }
 
@@ -59,10 +67,15 @@ namespace EduTrackOne.API.Controllers.Mvc
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateUserViewModel vm)
         {
-            if (!ModelState.IsValid) return View(vm);
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Échec de validation lors de la création d’un utilisateur.");
+                return View(vm);
+            }
             // Vérifier que le rôle existe (optionnel)
             if (!await _roleManager.RoleExistsAsync(vm.Role.ToString()))
             {
+                _logger.LogWarning("Rôle invalide lors de la création : {Role}", vm.Role);
                 ModelState.AddModelError("", $"Le rôle « {vm.Role} » n'existe pas.");
                 return View(vm);
             }
@@ -71,13 +84,17 @@ namespace EduTrackOne.API.Controllers.Mvc
             var identityUser = new IdentityUser(vm.Identifiant)
             {
                 Email = vm.Email,
-                // tu peux ajouter PhoneNumber, etc.
+
             };
             var createResult = await _userManager.CreateAsync(identityUser, vm.MotDePasse);
             if (!createResult.Succeeded)
             {
                 foreach (var error in createResult.Errors)
                     ModelState.AddModelError("", error.Description);
+
+                _logger.LogWarning("Échec de la création d’utilisateur Identity pour {Identifiant} : {Errors}",
+                   vm.Identifiant, string.Join(", ", createResult.Errors.Select(e => e.Description)));
+
                 return View(vm);
             }
 
@@ -89,11 +106,13 @@ namespace EduTrackOne.API.Controllers.Mvc
                 await _userManager.DeleteAsync(identityUser);
                 foreach (var error in roleResult.Errors)
                     ModelState.AddModelError("", error.Description);
+
+                _logger.LogWarning("Échec d’assignation de rôle {Role} à l’utilisateur {Identifiant}", vm.Role, vm.Identifiant);
                 return View(vm);
             }
-            
+
             //
-            // Persister dans ta table domaine via MediatR
+            // Persister dans la table domaine via MediatR
             var dto = new CreateUserDto(
                 vm.Identifiant,
                 vm.MotDePasse,
@@ -102,10 +121,11 @@ namespace EduTrackOne.API.Controllers.Mvc
                 vm.Email
             );
             await _mediator.Send(new CreateUserCommand(dto));
-            TempData["SuccessMessage"] = "Utilisateur créée avec succès !";
+            _logger.LogInformation("Utilisateur créé avec succès : {Identifiant}", vm.Identifiant);
 
+            TempData["SuccessMessage"] = "Utilisateur créée avec succès !";
             return RedirectToAction(nameof(Index));
-        
+
         }
 
         // GET: /Utilisateur/Edit/{id}
@@ -114,7 +134,12 @@ namespace EduTrackOne.API.Controllers.Mvc
         {
             var users = await _mediator.Send(new GetAllUsersQuery());
             var existing = users.FirstOrDefault(u => u.Id == id);
-            if (existing == null) return NotFound();
+            if (existing == null)
+            {
+                _logger.LogWarning("Échec d’accès à l’édition d’un utilisateur inexistant (ID: {Id})", id);
+                return NotFound();
+            }
+
             ViewData["Title"] = "Modifier un utilisateur";
             var vm = new UpdateUserViewModel
             {
@@ -140,10 +165,15 @@ namespace EduTrackOne.API.Controllers.Mvc
                                  .ToArray();
                 TempData["ErrorMessage"] = string.Join(" | ", errors);
 
+                _logger.LogWarning("Échec de validation lors de l’édition de l’utilisateur {Identifiant}", vm.Identifiant);
                 return View(vm);
             }
 
-            if (id != vm.Id) return BadRequest();
+            if (id != vm.Id)
+            {
+                _logger.LogWarning("Mismatch ID lors de l’édition : {PostedId} vs {RouteId}", vm.Id, id);
+                return BadRequest();
+            }
 
             var dto = new UpdateUserDto
             (
@@ -155,6 +185,8 @@ namespace EduTrackOne.API.Controllers.Mvc
             );
 
             await _mediator.Send(new UpdateUserCommand(dto));
+            _logger.LogInformation("Utilisateur mis à jour : {Identifiant}", vm.Identifiant);
+            TempData["SuccessMessage"] = "Utilisateur mis à jour avec succès !";
             return RedirectToAction(nameof(Index));
         }
         // GET: /Utilisateur/ChangePassword/{id}
@@ -163,7 +195,11 @@ namespace EduTrackOne.API.Controllers.Mvc
         {
             var users = await _mediator.Send(new GetAllUsersQuery());
             var u = users.FirstOrDefault(x => x.Id == id);
-            if (u == null) return NotFound();
+            if (u == null)
+            {
+                _logger.LogWarning("Tentative de changer le mot de passe pour utilisateur introuvable (ID: {Id})", id);
+                return NotFound();
+            }
 
             var vm = new ChangePasswordViewModel
             {
@@ -179,9 +215,18 @@ namespace EduTrackOne.API.Controllers.Mvc
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(Guid id, ChangePasswordViewModel vm)
         {
-            if (!ModelState.IsValid) return View(vm);
+            ViewData["Title"] = $"Changer le mot de passe de « {vm.Identifiant} »";
+
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Validation échouée lors du changement de mot de passe pour {Identifiant}", vm.Identifiant);
+                return View(vm);
+            }
             if (id != vm.UserId)
+            {
+                _logger.LogWarning("Mismatch ID lors du changement de mot de passe : {PostedId} vs {RouteId}", vm.UserId, id);
                 return BadRequest();
+            }
 
             var cmd = new ChangePasswordCommand(new ChangePasswordDto(
                 UserId: vm.UserId,
@@ -189,7 +234,24 @@ namespace EduTrackOne.API.Controllers.Mvc
                 NouveauMotDePasse: vm.NouveauMotDePasse
             ));
 
-            await _mediator.Send(cmd);
+            Result<Unit> result;
+            try
+            {
+                result = await _mediator.Send(cmd);
+            }
+            catch
+            {
+                ModelState.AddModelError("", "Une erreur inattendue est survenue.");
+                return View(vm);
+            }
+
+            if (!result.IsSuccess)
+            {
+                ModelState.AddModelError("", result.Error);
+                return View(vm);
+            }
+
+            _logger.LogInformation("Mot de passe mis à jour pour l’utilisateur {Identifiant}", vm.Identifiant);
             TempData["SuccessMessage"] = "Mot de passe mis à jour avec succès.";
             return RedirectToAction(nameof(Index));
         }
@@ -200,7 +262,11 @@ namespace EduTrackOne.API.Controllers.Mvc
         {
             var users = await _mediator.Send(new GetAllUsersQuery());
             var u = users.FirstOrDefault(x => x.Id == id);
-            if (u == null) return NotFound();
+            if (u == null)
+            {
+                _logger.LogWarning("Utilisateur introuvable pour suppression (ID: {Id})", id);
+                return NotFound();
+            }
 
             // Remplit le VM avec l'Id et l'Identifiant
             var vm = new DeleteUserViewModel
@@ -210,7 +276,7 @@ namespace EduTrackOne.API.Controllers.Mvc
             };
             return View(vm);
         }
-        
+
 
         // POST: /User/DeleteConfirmed
         [HttpPost("DeleteConfirmed/{id:guid}")]
@@ -218,6 +284,8 @@ namespace EduTrackOne.API.Controllers.Mvc
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             await _mediator.Send(new DeleteUserCommand(id));
+            _logger.LogInformation("Utilisateur supprimé (ID: {Id})", id); 
+            TempData["SuccessMessage"] = "Utilisateur supprimé avec succès !";
             return RedirectToAction(nameof(Index));
         }
     }

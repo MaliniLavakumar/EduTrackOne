@@ -1,6 +1,6 @@
 ﻿@model EduTrackOne.Contracts.DTOs.UpdateEleveDto
 @{
-    ViewData["Title"] = "Modifier l'élève";
+
     Layout = "_Layout";
 
     // champs en lecture seule
@@ -9,9 +9,14 @@
     var naissance = ViewData["Naissance"] as string;
     var sexe = ViewData["Sexe"] as string;
     var classeId = ViewData["ClasseId"] as Guid?;
+    var Immatricule = ViewData["Immatricule"] as string;
+    var titreComplet = !string.IsNullOrEmpty(prenom) && !string.IsNullOrEmpty(nom)
+        ? $"Modifier l'élève : {prenom} {nom}"
+        : "Modifier l'élève";
+    ViewData["Title"] = titreComplet;
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1 class="text-center">@ViewData["Title"]</h1>
 
 @if (!ViewData.ModelState.IsValid)
 {
@@ -45,6 +50,12 @@
             <label class="col-sm-2 col-form-label">Sexe</label>
             <div class="col-sm-10">
                 <input class="form-control" value="@sexe" />
+            </div>
+        </div>
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label">No Immatricule</label>
+            <div class="col-sm-10">
+                <input class="form-control" value="@Immatricule" />
             </div>
         </div>
     </fieldset>

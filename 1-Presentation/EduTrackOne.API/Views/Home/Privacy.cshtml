@@ -1,6 +1,21 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Confidentialité";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container mt-4">
+    <h1 class="display-4">Politique de Confidentialité</h1>
+
+    <p>
+        EduTrack One respecte votre vie privée. Aucune donnée personnelle n’est partagée sans autorisation.
+        L’application ne collecte que les informations strictement nécessaires pour le suivi scolaire (élèves, présences, notes).
+    </p>
+
+    <p>
+        Les données sont protégées et accessibles uniquement aux utilisateurs autorisés.
+        Pour toute demande de suppression, veuillez contacter l’administrateur.
+    </p>
+
+    <p class="text-muted">
+        Dernière mise à jour : @DateTime.Now.ToString("dd MMMM yyyy")
+    </p>
+</div>

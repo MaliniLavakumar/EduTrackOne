@@ -3,7 +3,7 @@
     ViewData["Title"] = "Ajouter des présences";
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1 class="text-center">@ViewData["Title"]</h1>
 @if (!ViewData.ModelState.IsValid)
 {
     <div asp-validation-summary="All" class="alert alert-danger"></div>
@@ -58,8 +58,8 @@
         </tbody>
     </table>
 
-    <button type="submit" class="btn btn-primary">Enregistrer les présences</button>
-    <a asp-action="Details" asp-route-id="@Model.ClasseId" class="btn btn-secondary ms-2">Annuler</a>
+    <button type="submit" class="btn btn-primary"> <i class="bi bi-save"></i> Enregistrer les présences</button>
+    <a asp-action="Details" asp-route-id="@Model.ClasseId" class="btn btn-secondary ms-2"> <i class="bi bi-x-circle"></i> Annuler</a>
 </form>
 
 @section Scripts {

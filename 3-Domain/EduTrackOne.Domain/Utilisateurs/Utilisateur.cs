@@ -19,7 +19,7 @@ namespace EduTrackOne.Domain.Utilisateurs
         public Utilisateur(
             Guid id,
             string identifiant,
-            string motDePasse,
+            //string motDePasse,
             RoleUtilisateur role,
             StatutUtilisateur statut,
             Email email)
@@ -29,17 +29,20 @@ namespace EduTrackOne.Domain.Utilisateurs
                 ? throw new ArgumentException("L'identifiant est requis.", nameof(identifiant))
                 : identifiant;
 
-            MotDePasseHash = HashMotDePasse(motDePasse);
+            //MotDePasseHash = HashMotDePasse(motDePasse);
             Role = role;
             Statut = statut;
             Email = email ?? throw new ArgumentNullException(nameof(email));
 
             AddDomainEvent(new UserCreatedEvent(Id, Identifiant, Email.Value));
         }
-
+        public void SetMotDePasseHash(string motDePasseHash)
+        {
+            MotDePasseHash = motDePasseHash ?? throw new ArgumentNullException(nameof(motDePasseHash));
+        }
         // Vérifier qu’un mot de passe clair correspond au hash stocké
-        public bool VerifierMotDePasse(string motDePasse)
-            => MotDePasseHash == HashMotDePasse(motDePasse);
+        //public bool VerifierMotDePasse(string motDePasse)
+        //    => MotDePasseHash == HashMotDePasse(motDePasse);
 
         // Authentifier un utilisateur (login)
         public void Authentifier()
@@ -48,15 +51,20 @@ namespace EduTrackOne.Domain.Utilisateurs
         }
 
         // Mettre à jour le mot de passe (nécessite l’ancien)
-        public void ModifierMotDePasse(string ancien, string nouveau)
-        {
-            if (!VerifierMotDePasse(ancien))
-                throw new InvalidOperationException("Ancien mot de passe incorrect.");
+        //public void ModifierMotDePasse(string ancien, string nouveau)
+        //{
+        //    if (!VerifierMotDePasse(ancien))
+        //        throw new InvalidOperationException("Ancien mot de passe incorrect.");
 
-            MotDePasseHash = HashMotDePasse(nouveau);
+        //    MotDePasseHash = HashMotDePasse(nouveau);
+        //    AddDomainEvent(new PasswordChangedEvent(Id));
+        //}
+        public void ModifierMotDePasse(string nouveauMotDePasseHash)
+        {
+            // Le handler aura déjà vérifié l’ancien mot de passe via IPasswordHasher
+            MotDePasseHash = nouveauMotDePasseHash ?? throw new ArgumentNullException(nameof(nouveauMotDePasseHash));
             AddDomainEvent(new PasswordChangedEvent(Id));
         }
-
         // Changer de rôle
         public void ModifierRole(RoleUtilisateur nouveauRole)
         {
@@ -85,16 +93,16 @@ namespace EduTrackOne.Domain.Utilisateurs
         }
 
         //--- Implémentation privée du hash---
-        private static string HashMotDePasse(string motDePasse)
-        {
-            if (string.IsNullOrEmpty(motDePasse))
-                throw new ArgumentException("Le mot de passe ne peut pas être vide.", nameof(motDePasse));
+        //private static string HashMotDePasse(string motDePasse)
+        //{
+        //    if (string.IsNullOrEmpty(motDePasse))
+        //        throw new ArgumentException("Le mot de passe ne peut pas être vide.", nameof(motDePasse));
 
-            using var sha256 = SHA256.Create();
-            var bytes = Encoding.UTF8.GetBytes(motDePasse);
-            var hashBytes = sha256.ComputeHash(bytes);
-            return Convert.ToBase64String(hashBytes);
-        }
+        //    using var sha256 = SHA256.Create();
+        //    var bytes = Encoding.UTF8.GetBytes(motDePasse);
+        //    var hashBytes = sha256.ComputeHash(bytes);
+        //    return Convert.ToBase64String(hashBytes);
+        //}
         public void MettreÀJourProfil(
     string nouvelIdentifiant,
     Email nouvelEmail,

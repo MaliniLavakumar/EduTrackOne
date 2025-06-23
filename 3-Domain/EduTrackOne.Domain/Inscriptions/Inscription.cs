@@ -202,7 +202,8 @@ namespace EduTrackOne.Domain.Inscriptions
                 var moyenne = grp
                     .Select(n => n.Valeur.Value!.Value)
                     .Average();
-                result[grp.Key] = moyenne;
+                double arrondi = Math.Round(moyenne, 1);
+                result[grp.Key] = arrondi;
             }
 
             return result;

@@ -4,7 +4,11 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ConnectionStrings__DefaultConnection": "Server=localhost,1433;Database=EduTrackOneDb;User Id=sa;Password=EduTrackOne2025!;TrustServerCertificate=True;",
+        "Jwt__Key": "DevJwtKey123456",
+        "Jwt__Issuer": "https://localhost:5244",
+        "Jwt__Audience": "EduTrackOneAudience"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "http://localhost:5244"
@@ -13,7 +17,11 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ConnectionStrings__DefaultConnection": "Server=localhost,1433;Database=EduTrackOneDb;User Id=sa;Password=EduTrackOne2025!;TrustServerCertificate=True;",
+        "Jwt__Key": "DevJwtKey123456",
+        "Jwt__Issuer": "https://localhost:7045",
+        "Jwt__Audience": "EduTrackOneAudience"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7045;http://localhost:5244"
@@ -23,8 +31,12 @@
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HTTPS_PORTS": "8081",
-        "ASPNETCORE_HTTP_PORTS": "8080"
+        "ASPNETCORE_HTTP_PORTS": "8080",
+         "Jwt__Key": "DevJwtKeyDocker",
+        "Jwt__Issuer": "https://localhost:7045",
+        "Jwt__Audience": "EduTrackOneAudience"
       },
       "publishAllPorts": true,
       "useSSL": true

@@ -1,33 +1,41 @@
-version: '3.8'
 
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: sqlserver-edutrackone
     environment:
-       - ACCEPT_EULA=Y
-       - MSSQL_PID=Developer
-       - SA_PASSWORD=${SA_PASSWORD}
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+      SA_PASSWORD: "EduTrackOne2025!"
     ports:
       - "1433:1433"
     volumes:
       - sql_data:/var/opt/mssql
     networks:
       - edutrackone-network
+    healthcheck:
+      test: [ "CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "EduTrackOne2025!", "-Q", "SELECT 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   edutrackone.api:
+    container_name: edutrackone.api
+    image: edutrackone.api
     build:
       context: .
       dockerfile: 1-Presentation/EduTrackOne.API/Dockerfile
-   
+    volumes:
+      - .:/src
     depends_on:
-      - sqlserver
+      sqlserver:
+        condition: service_healthy
     ports:
-      - "8080:80"
+      - "7045:80"    # redirige le port 7045 vers port 80 du conteneur
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__Default=Server=sqlserver,1433;Database=EduTrackOneDb;User=sa;Password=${SA_PASSWORD};
+      ASPNETCORE_ENVIRONMENT: Development   # ou Production selon le profil
+      ASPNETCORE_URLS: http://+:80
+      ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=EduTrackOneDb;User=sa;Password=EduTrackOne2025!;TrustServerCertificate=True;"
     networks:
       - edutrackone-network
 

@@ -1,49 +1,66 @@
 ﻿@using EduTrackOne.Application.Utilisateurs
 @model DashboardViewModel
 @{
-    ViewData["Title"] = "Tableau de bord";
+    // ViewData["Title"] = "Tableau de bord";
     Layout = "_Layout";
 }
+<div class="dashboard-container">
 
-<h1>Bienvenue, @User.Identity.Name</h1>
-<h2>@Model.SchoolName</h2>
+@if (TempData["WelcomeMessage"] != null)
+{
+    <div class="welcome-banner">
+        @TempData["WelcomeMessage"]
+    </div>
+}
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show mx-auto w-75" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mx-auto w-75" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+<h1 class="mb-4">@Model.SchoolName</h1>
 
 @if (Model.IsAdmin)
 {
-    <p>Vous êtes administrateur. Utilisez le menu pour gérer l’application.</p>
-}
+        <h5 class="text-center">Utilisez le menu pour gérer l’application. </h5>
+    }
 else
 {
 
-    <h1>@ViewData["Title"]</h1>
+    <h1 class="mb-3">@ViewData["Title"]</h1>
 
-    <h2>Vos classes</h2>
+    <h2 class="mb-3">Vos classes</h2>
     @if (Model.ClassesToManage == null || !Model.ClassesToManage.Any())
     {
         <div class="alert alert-info">Aucune classe attribuée.</div>
     }
     else
     {
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Nom de la classe</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var c in Model.ClassesToManage)
-                {
-                    <tr>
-                        <td>@c.NomClasse</td>
-                        <td>
-                            <a asp-controller="Classe" asp-action="Details" asp-route-id="@c.Id" class="btn btn-sm btn-primary">
-                                Voir
+            {
+                <div class="class-table-container">
+                    <div class="class-table-header">
+                        <span>Nom de la classe</span>
+                    </div>
+
+                    @foreach (var c in Model.ClassesToManage)
+                    {
+                        <div class="class-table-row">
+                            <a asp-controller="Classe" asp-action="Details" asp-route-id="@c.Id" class="class-name-link">
+                                @c.NomClasse
                             </a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                        </div>
+                    }
+                </div>
+            }
     }
 }
+</div>

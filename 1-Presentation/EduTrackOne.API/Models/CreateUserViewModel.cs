@@ -18,6 +18,13 @@ namespace EduTrackOne.API.Models
         [MinLength(6, ErrorMessage = "Le mot de passe doit faire au moins 6 caractères.")]
         public string MotDePasse { get; set; } = string.Empty;
 
+        [Required]
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirmation du mot de passe")]
+        [Compare("MotDePasse", ErrorMessage = "Le mot de passe et sa confirmation ne correspondent pas.")]
+        public string ConfirmationMotDePasse { get; set; } = "";
+
+
         [Required(ErrorMessage = "Le rôle est obligatoire.")]
         public UserRoleDto? Role { get; set; }
 

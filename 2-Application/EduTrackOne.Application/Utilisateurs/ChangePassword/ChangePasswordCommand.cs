@@ -1,4 +1,5 @@
-﻿using EduTrackOne.Contracts.DTOs;
+﻿using EduTrackOne.Application.Common;
+using EduTrackOne.Contracts.DTOs;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -8,5 +9,5 @@ using System.Threading.Tasks;
 
 namespace EduTrackOne.Application.Utilisateurs.ChangePassword
 {
-    public record ChangePasswordCommand(ChangePasswordDto Dto) : IRequest<Unit>;
+    public record ChangePasswordCommand(ChangePasswordDto Dto) : IRequest<Result<Unit>>;
 }

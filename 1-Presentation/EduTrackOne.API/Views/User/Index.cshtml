@@ -4,9 +4,25 @@
     ViewData["Title"] = "Utilisateurs";
 }
 
-<h1>Gestion des utilisateurs</h1>
+<h1 class="text-center">Gestion des utilisateurs</h1>
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mx-auto w-75" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+@Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
 <p>
-    <a asp-controller="User" asp-action="Create" class="btn btn-success">Créer un utilisateur</a>
+    <a asp-controller="User" asp-action="Create" class="btn btn-success"
+       data-bs-toggle="tooltip" data-bs-placement="top" title="Créer un nouvel utilisateur">
+        <i class="bi bi-plus-lg me-1"></i>Créer
+    </a>
 </p>
 <table class="table table-striped">
     <thead>
@@ -27,10 +43,23 @@
                 <td>@u.Role</td>
                 <td>@u.Statut</td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@u.Id" class="btn btn-sm btn-info">Voir</a>
-                    <a asp-controller="User" asp-action="Edit" asp-route-id="@u.Id" class="btn btn-sm btn-warning">Modifier</a>
-                    <a asp-action="ChangePassword" asp-route-id="@u.Id" class="btn btn-sm btn-secondary">Mot de passe</a>
-                    <a asp-action="Delete" asp-route-id="@u.Id" class="btn btn-sm btn-danger">Supprimer</a>
+                    <a asp-action="Details" asp-route-id="@u.Id" class="btn btn-sm btn-info"
+                       data-bs-toggle="tooltip" data-bs-placement="top" title="Voir les détails">
+                        <i class="bi bi-eye-fill"></i>
+                    </a>
+                    <a asp-controller="User" asp-action="Edit" asp-route-id="@u.Id" class="btn btn-sm btn-warning ms-1"
+                       data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier l’utilisateur">
+                        <i class="bi bi-pencil-fill"></i>
+                    </a>
+                    <a asp-action="ChangePassword" asp-route-id="@u.Id" class="btn btn-sm btn-secondary ms-1"
+                       data-bs-toggle="tooltip" data-bs-placement="top" title="Changer le mot de passe">
+                        <i class="bi bi-key-fill"></i>
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@u.Id" class="btn btn-sm btn-danger ms-1"
+                       data-bs-toggle="tooltip" data-bs-placement="top" title="Supprimer l’utilisateur"
+                       onclick="return confirm('Confirmez-vous la suppression de cet utilisateur ?');">
+                        <i class="bi bi-trash-fill"></i>
+                    </a>
                 </td>
             </tr>
         }

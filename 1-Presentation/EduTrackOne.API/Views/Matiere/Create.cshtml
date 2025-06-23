@@ -1,0 +1,32 @@
+﻿@model EduTrackOne.Contracts.DTOs.CreateMatiereDto
+
+@{
+    ViewData["Title"] = "Créer une matière";
+    Layout = "_Layout";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<form asp-action="Create" method="post" class="mt-4">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        @Html.LabelFor(m => m.NomMatiere, new { @class = "form-label" })
+        @Html.TextBoxFor(m => m.NomMatiere, new { @class = "form-control", placeholder = "Nom de la matière" })
+        @Html.ValidationMessageFor(m => m.NomMatiere, "", new { @class = "text-danger" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">Créer</button>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Annuler</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

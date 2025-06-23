@@ -5,76 +5,98 @@
     Layout = "_Layout";
 }
 
-<h1>@ViewData["Title"] : @Model.NomClasse</h1>
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        @TempData["SuccessMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        @TempData["ErrorMessage"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-}
+<div class="classe-details-container">
 
-<div class="mb-3">
-    <a asp-action="CreateInscription" asp-controller="Classe" asp-route-classeId="@Model.ClassId" class="btn btn-success me-2" data-bs-toggle="tooltip" title="Nouvelle inscription">
-        <i class="bi bi-person-plus"></i>
-    </a>
-    <a asp-action="AddNotes" asp-controller="Classe" asp-route-classeId="@Model.ClassId" class="btn btn-primary me-2" data-bs-toggle="tooltip" title="Ajouter des notes">
-        <i class="bi bi-journal-text"></i>
-    </a>
-    <a asp-action="AddPresences" asp-controller="Classe" asp-route-classeId="@Model.ClassId" class="btn btn-primary" data-bs-toggle="tooltip" title="Ajouter des présences">
-        <i class="bi bi-calendar-check"></i>
-    </a>
-</div>
+    <!-- Titre centré -->
+    <h1 class="text-center mb-4">
+        @ViewData["Title"] : @Model.NomClasse
+    </h1>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Élève</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var insc in Model.Inscriptions)
-        {
-            <tr>
-                <td>@insc.EleveNom</td>
-                <td>
-                    <div class="btn-group" role="group">
-                        <a asp-controller="Eleve" asp-action="Details" asp-route-id="@insc.EleveId" asp-route-classeId="@Model.ClassId" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Détails">
-                            <i class="bi bi-eye"></i>
+    <!-- Messages TempData -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show mx-auto w-75" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show mx-auto w-75" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Actions globales -->
+    <div class="action-buttons text-center mb-4">
+        <a asp-action="CreateInscription" asp-controller="Classe" asp-route-classeId="@Model.ClassId"
+           class="btn btn-success me-2" data-bs-toggle="tooltip" title="Nouvelle inscription">
+            <i class="bi bi-person-plus fs-4"></i>
+        </a>
+        <a asp-action="AddNotes" asp-controller="Classe" asp-route-classeId="@Model.ClassId"
+           class="btn btn-primary me-2" data-bs-toggle="tooltip" title="Ajouter des notes">
+            <i class="bi bi-journal-text fs-4"></i>
+        </a>
+        <a asp-action="AddPresences" asp-controller="Classe" asp-route-classeId="@Model.ClassId"
+           class="btn btn-primary" data-bs-toggle="tooltip" title="Ajouter des présences">
+            <i class="bi bi-calendar-check fs-4"></i>
+        </a>
+    </div>
+
+    <!-- Liste des élèves façon stripe/list-group -->
+    @if (Model.Inscriptions == null || !Model.Inscriptions.Any())
+    {
+        <div class="alert alert-info text-center mx-auto w-75">Aucun élève inscrit pour cette classe.</div>
+    }
+    else
+    {
+        <div class="student-list-container mx-auto w-75">
+            <!-- En-tête de liste -->
+            <div class="student-list-header d-flex justify-content-between align-items-center px-3 py-2">
+                <span class="header-name">Élève</span>
+                <span class="header-actions">Actions</span>
+            </div>
+            @foreach (var insc in Model.Inscriptions.Select((value, index) => new { value, index }))
+            {
+                var ins = insc.value;
+                bool isOdd = (insc.index % 2 == 1);
+                <!-- On peut alterner le fond selon isOdd pour un effet stripe -->
+                <div class="student-list-row d-flex justify-content-between align-items-center px-3 py-3 @(isOdd ? "row-odd" : "row-even")">
+                    <div class="student-name">
+                        <i class="bi bi-person-circle me-2 fs-3 text-secondary"></i>
+                        @ins.EleveNom
+                    </div>
+                    <div class="student-actions btn-group" role="group">
+                        <a asp-controller="Eleve" asp-action="Details"
+                           asp-route-id="@ins.EleveId" asp-route-classeId="@Model.ClassId"
+                           class="btn btn-outline-primary btn-action" data-bs-toggle="tooltip" title="Détails">
+                            <i class="bi bi-eye fs-5"></i>
                         </a>
-                        <a asp-controller="Eleve" asp-action="Edit" asp-route-id="@insc.EleveId" asp-route-classeId="@Model.ClassId" class="btn btn-sm btn-outline-warning" data-bs-toggle="tooltip" title="Modifier">
-                            <i class="bi bi-pencil-square"></i>
+                        <a asp-controller="Eleve" asp-action="Edit"
+                           asp-route-id="@ins.EleveId" asp-route-classeId="@Model.ClassId"
+                           class="btn btn-outline-warning btn-action" data-bs-toggle="tooltip" title="Modifier">
+                            <i class="bi bi-pencil-square fs-5"></i>
                         </a>
-                        <!-- Formulaire de suppression avec confirmation -->
-                        <form asp-action="DeleteInscription"
-                              asp-controller="Classe"
-                              asp-route-classeId="@Model.ClassId"
-                              asp-route-eleveId="@insc.EleveId"
-                              method="post"
-                              class="d-inline"
-                              onsubmit="return confirm('Voulez-vous vraiment supprimer l\'inscription de @insc.EleveNom ?');">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="Supprimer">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>    
-                        <a asp-controller="Note" asp-action="GetNotes" asp-route-inscriptionId="@insc.InscriptionId" class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip" title="Voir des notes">
-                            <i class="bi bi-file-earmark-text"></i>
+                        <a asp-action="ConfirmDeleteInscription"
+                           asp-controller="Classe"
+                           asp-route-classeId="@Model.ClassId"
+                           asp-route-eleveId="@ins.EleveId"
+                           class="btn btn-outline-danger btn-action" data-bs-toggle="tooltip" title="Supprimer">
+                            <i class="bi bi-trash fs-5"></i>
+
                         </a>
-                        <a asp-controller="Presence" asp-action="GetPresences" asp-route-inscriptionid="@insc.InscriptionId" class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip" title="Voir des présences">
-                            <i class="bi bi-calendar2-week"></i>
+                        <a asp-controller="Note" asp-action="GetNotes" asp-route-inscriptionId="@ins.InscriptionId"
+                           class="btn btn-outline-info btn-action" data-bs-toggle="tooltip" title="Voir les notes">
+                            <i class="bi bi-file-earmark-text fs-5"></i>
+                        </a>
+                        <a asp-controller="Presence" asp-action="GetPresences" asp-route-inscriptionid="@ins.InscriptionId"
+                           class="btn btn-outline-info btn-action" data-bs-toggle="tooltip" title="Voir les présences">
+                            <i class="bi bi-calendar2-week fs-5"></i>
                         </a>
                     </div>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                </div>
+            }
+        </div>
+    }
+</div>
