@@ -1,19 +1,17 @@
-﻿using EduTrackOne.Application.Classes.AddInscription;
+﻿using Xunit;
 using EduTrackOne.Application.Inscriptions.AddNotesForClasse;
-using EduTrackOne.Application.Notes.GetNotesByInscription;
-using EduTrackOne.Contracts.DTOs;
-using EduTrackOne.Domain.Abstractions;
 using EduTrackOne.Domain.Inscriptions;
 using EduTrackOne.Domain.Notes;
-using FluentAssertions;
+using EduTrackOne.Contracts.DTOs;
+using EduTrackOne.Domain.Abstractions;
 using FluentValidation;
 using FluentValidation.Results;
-using Microsoft.Extensions.Logging;
+using FluentAssertions;
 using Moq;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EduTrackOne.Tests.ApplicationTests.UseCases
@@ -24,8 +22,9 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
         private readonly Mock<INoteRepository> _noteRepoMock = new();
         private readonly Mock<IInscriptionManager> _managerMock = new();
         private readonly Mock<IUnitOfWork> _uowMock = new();
-        private readonly Mock<ILogger<AddNotesForClasseCommandHandler>> _mockLogger;
         private readonly Mock<IValidator<AddNotesForClasseCommand>> _validatorMock = new();
+        private readonly Mock<ILogger<AddNotesForClasseCommandHandler>> _mockLogger
+            = new Mock<ILogger<AddNotesForClasseCommandHandler>>();
         private readonly AddNotesForClasseCommandHandler _handler;
 
         public AddNotesForClasseCommandHandlerTests()
@@ -36,8 +35,7 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
                 _managerMock.Object,
                 _uowMock.Object,
                 _validatorMock.Object,
-                 _mockLogger.Object
-
+                _mockLogger.Object
             );
         }
 
@@ -46,36 +44,31 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
         {
             // Arrange
             var inscriptionId = Guid.NewGuid();
-            var classeId = Guid.NewGuid();
             var eleveId = Guid.NewGuid();
             var matiereId = Guid.NewGuid();
             var dateExamen = new DateTime(2025, 5, 10);
 
-            var dateDebut = new DateOnly(2024, 9, 1);
-            var dateFin = new DateOnly(2025, 6, 30);
             var periode = new DateInscriptionPeriode(
-                dateDebut.ToDateTime(TimeOnly.MinValue),
-                dateFin.ToDateTime(TimeOnly.MinValue)
-                );
-            
-                        var noteDto = new NoteForEleveDto(eleveId, matiereId, 5.0, "Bon travail");
+                new DateTime(2024, 9, 1),
+                new DateTime(2025, 6, 30)
+            );
 
+            var noteDto = new NoteForEleveDto(eleveId, matiereId, 5.0, "Bon travail");
             var command = new AddNotesForClasseCommand(
-                classeId,
+                Guid.NewGuid(), // classeId
                 dateExamen,
                 new List<NoteForEleveDto> { noteDto }
             );
 
-            var inscription = new Inscription(inscriptionId, periode, classeId, eleveId);
-            var inscriptions = new List<Inscription> { inscription };
+            var inscription = new Inscription(inscriptionId, periode, command.ClasseId, eleveId);
+            _inscRepoMock
+    .Setup(r => r.GetByClasseAsync(command.ClasseId, It.IsAny<CancellationToken>()))
+    .ReturnsAsync(new List<Inscription> { inscription });
+
 
             _validatorMock
-                .Setup(v => v.ValidateAsync(It.IsAny<AddNotesForClasseCommand>(), It.IsAny<CancellationToken>()))
+                .Setup(v => v.ValidateAsync(command, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new ValidationResult());
-
-            _inscRepoMock
-                .Setup(r => r.GetByClasseAsync(classeId, It.IsAny<CancellationToken>()))
-                .ReturnsAsync(inscriptions);
 
             _noteRepoMock
                 .Setup(r => r.AddAsync(It.IsAny<Note>(), It.IsAny<CancellationToken>()))
@@ -83,7 +76,7 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
 
             _uowMock
                 .Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()))
-                .ReturnsAsync(0);
+                .ReturnsAsync(1);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -103,7 +96,11 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
                 )
             ), Times.Once);
 
-            _noteRepoMock.Verify(r => r.AddAsync(It.IsAny<Note>(), It.IsAny<CancellationToken>()), Times.Once);
+            _noteRepoMock.Verify(r => r.AddAsync(
+                It.IsAny<Note>(),
+                It.IsAny<CancellationToken>()
+            ), Times.Once);
+
             _uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
     }

@@ -56,6 +56,7 @@ var configuration = new ConfigurationBuilder()
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(configuration)
     .Enrich.FromLogContext()
+    .WriteTo.Console()
     .CreateLogger();
 
 // Remplacer le logger par défaut d’ASP.NET Core par Serilog

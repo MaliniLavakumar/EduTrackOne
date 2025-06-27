@@ -1,5 +1,4 @@
-﻿using EduTrackOne.Application.Classes.AddInscription;
-using EduTrackOne.Application.Utilisateurs.GetAllUsers;
+﻿using EduTrackOne.Application.Utilisateurs.GetAllUsers;
 using EduTrackOne.Domain.Eleves;
 using EduTrackOne.Domain.Utilisateurs;
 using FluentAssertions;
@@ -8,23 +7,23 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace EduTrackOne.Tests.ApplicationTests.UseCases
 {
     public class GetAllUsersQueryHandlerTests
     {
         private readonly Mock<IUtilisateurRepository> _mockRepo;
-        private readonly GetAllUsersQueryHandler _handler;
         private readonly Mock<ILogger<GetAllUsersQueryHandler>> _mockLogger;
+        private readonly GetAllUsersQueryHandler _handler;
+
         public GetAllUsersQueryHandlerTests()
         {
             _mockRepo = new Mock<IUtilisateurRepository>();
-            _handler = new GetAllUsersQueryHandler(_mockRepo.Object, _mockLogger.Object);
-
             _mockLogger = new Mock<ILogger<GetAllUsersQueryHandler>>();
-
+            _handler = new GetAllUsersQueryHandler(_mockRepo.Object, _mockLogger.Object);
         }
 
         [Fact]
@@ -49,27 +48,20 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
         public async Task Handle_WhenUsersExist_ReturnsMappedDtos()
         {
             // Arrange
-            var userId1 = Guid.NewGuid();
             var user1 = new Utilisateur(
-                id: userId1,
-                identifiant: "alice",
-               
-                role: new RoleUtilisateur(RoleUtilisateur.Role.Admin),
-                statut: new StatutUtilisateur(StatutUtilisateur.StatutEnum.Actif),
-                email: new Email("alice@example.com")
+                Guid.NewGuid(),
+                "alice",
+                new RoleUtilisateur(RoleUtilisateur.Role.Admin),
+                new StatutUtilisateur(StatutUtilisateur.StatutEnum.Actif),
+                new Email("alice@example.com")
             );
-
-            var userId2 = Guid.NewGuid();
             var user2 = new Utilisateur(
-                id: userId2,
-                identifiant: "bob",
-               
-                role: new RoleUtilisateur(RoleUtilisateur.Role.Enseignant),
-                statut: new StatutUtilisateur(StatutUtilisateur.StatutEnum.Inactif),
-                email: new Email("bob@example.com")
+                Guid.NewGuid(),
+                "bob",
+                new RoleUtilisateur(RoleUtilisateur.Role.Enseignant),
+                new StatutUtilisateur(StatutUtilisateur.StatutEnum.Inactif),
+                new Email("bob@example.com")
             );
-
-            // Clear any domain events raised during construction
             user1.ClearDomainEvents();
             user2.ClearDomainEvents();
 
@@ -85,21 +77,20 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
             // Assert
             result.Should().HaveCount(2);
 
-            var dtoList = new List<GetAllUsersDto>(result);
-            dtoList[0].Id.Should().Be(userId1);
-            dtoList[0].Identifiant.Should().Be("alice");
-            dtoList[0].Role.Should().Be(RoleUtilisateur.Role.Admin);
-            dtoList[0].Statut.Should().Be(StatutUtilisateur.StatutEnum.Actif);
-            dtoList[0].Email.Should().Be("alice@example.com");
+            var dtos = result.ToList();
+            dtos[0].Id.Should().Be(user1.Id);
+            dtos[0].Identifiant.Should().Be("alice");
+            dtos[0].Role.Should().Be(RoleUtilisateur.Role.Admin);
+            dtos[0].Statut.Should().Be(StatutUtilisateur.StatutEnum.Actif);
+            dtos[0].Email.Should().Be("alice@example.com");
 
-            dtoList[1].Id.Should().Be(userId2);
-            dtoList[1].Identifiant.Should().Be("bob");
-            dtoList[1].Role.Should().Be(RoleUtilisateur.Role.Enseignant);
-            dtoList[1].Statut.Should().Be(StatutUtilisateur.StatutEnum.Inactif);
-            dtoList[1].Email.Should().Be("bob@example.com");
+            dtos[1].Id.Should().Be(user2.Id);
+            dtos[1].Identifiant.Should().Be("bob");
+            dtos[1].Role.Should().Be(RoleUtilisateur.Role.Enseignant);
+            dtos[1].Statut.Should().Be(StatutUtilisateur.StatutEnum.Inactif);
+            dtos[1].Email.Should().Be("bob@example.com");
 
             _mockRepo.Verify(r => r.GetAllAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }
-

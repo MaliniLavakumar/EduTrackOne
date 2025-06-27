@@ -33,7 +33,7 @@ services:
     ports:
       - "7045:80"    # redirige le port 7045 vers port 80 du conteneur
     environment:
-      ASPNETCORE_ENVIRONMENT: Development   # ou Production selon le profil
+      ASPNETCORE_ENVIRONMENT: Development   
       ASPNETCORE_URLS: http://+:80
       ConnectionStrings__DefaultConnection: "Server=sqlserver,1433;Database=EduTrackOneDb;User=sa;Password=EduTrackOne2025!;TrustServerCertificate=True;"
     networks:

@@ -42,25 +42,7 @@ namespace EduTrackOne.Tests.DomainTests.Entities
                .WithMessage("L'identifiant est requis.*");
         }
 
-        [Fact]
-        public void Constructeur_MotDePasseVide_Doit_LeverArgumentException()
-        {
-            // Arrange
-            var id = GuidValide();
-            var email = CréerEmail();
-            var role = CréerRoleAdmin();
-            var statut = CréerStatutActif();
-            var identif = "user1";
-            var mdp = "";
-
-            // Act
-            Action act = () => new Utilisateur(id, identif, role, statut, email);
-
-            // Assert
-            act.Should().Throw<ArgumentException>()
-               .WithParameterName("motDePasse")
-               .WithMessage("Le mot de passe ne peut pas être vide.*");
-        }
+      
 
         [Fact]
         public void Constructeur_EmailNull_Doit_LeverArgumentNullException()

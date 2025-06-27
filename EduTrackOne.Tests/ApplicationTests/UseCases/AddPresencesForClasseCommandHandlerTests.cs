@@ -1,4 +1,4 @@
-﻿using EduTrackOne.Application.Classes.AddInscription;
+﻿using Xunit;                                          // +++
 using EduTrackOne.Application.Inscriptions.AddPresencesForClasse;
 using EduTrackOne.Contracts.DTOs;
 using EduTrackOne.Domain.Abstractions;
@@ -7,13 +7,11 @@ using EduTrackOne.Domain.Presences;
 using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
-using Microsoft.Extensions.Compliance.Classification;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace EduTrackOne.Tests.ApplicationTests.UseCases
@@ -25,7 +23,8 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
         private readonly Mock<IInscriptionManager> _managerMock = new();
         private readonly Mock<IUnitOfWork> _uowMock = new();
         private readonly Mock<IValidator<AddPresencesForClasseCommand>> _validatorMock = new();
-        private readonly Mock<ILogger<AddPresencesForClasseCommandHandler>> _mockLogger;
+        private readonly Mock<ILogger<AddPresencesForClasseCommandHandler>> _mockLogger
+            = new Mock<ILogger<AddPresencesForClasseCommandHandler>>();  // +++
 
         private readonly AddPresencesForClasseCommandHandler _handler;
 
@@ -37,8 +36,7 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
                 _managerMock.Object,
                 _uowMock.Object,
                 _validatorMock.Object,
-                _mockLogger.Object
-
+                _mockLogger.Object    // +++
             );
         }
 
@@ -53,16 +51,14 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
             var periode = 1;
 
             var presenceDto = new PresenceEleveDto(eleveId, "Present");
-
             var command = new AddPresencesForClasseCommand(
                 classeId,
                 date,
                 periode,
                 new List<PresenceEleveDto> { presenceDto }
             );
-            var dateDebut = new DateTime(2025, 1, 1);
-            var periodeInscription = new DateInscriptionPeriode(dateDebut, null);
 
+            var periodeInscription = new DateInscriptionPeriode(new DateTime(2025, 1, 1), null);
             var inscription = new Inscription(inscriptionId, periodeInscription, classeId, eleveId);
             var inscriptions = new List<Inscription> { inscription };
 
@@ -80,7 +76,7 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
 
             _uowMock
                 .Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()))
-                .ReturnsAsync(1);
+                .ReturnsAsync(1);  // +++
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -99,9 +95,12 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
                 )
             ), Times.Once);
 
-            _presRepoMock.Verify(r => r.AddAsync(It.IsAny<Presence>(), It.IsAny<CancellationToken>()), Times.Once);
+            _presRepoMock.Verify(r => r.AddAsync(
+                It.IsAny<Presence>(),
+                It.IsAny<CancellationToken>()
+            ), Times.Once);
+
             _uowMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }
-

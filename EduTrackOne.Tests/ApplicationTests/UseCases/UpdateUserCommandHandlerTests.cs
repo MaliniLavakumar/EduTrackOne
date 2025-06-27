@@ -3,18 +3,17 @@ using EduTrackOne.Application.Utilisateurs.UpdateUser;
 using EduTrackOne.Contracts.DTOs;
 using EduTrackOne.Domain.Abstractions;
 using EduTrackOne.Domain.Eleves;
-using EduTrackOne.Domain.Utilisateurs.Events;
 using EduTrackOne.Domain.Utilisateurs;
+using EduTrackOne.Domain.Utilisateurs.Events;
 using FluentAssertions;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using EduTrackOne.Application.Classes.AddInscription;
-using Microsoft.Extensions.Logging;
+using Xunit;
 
 namespace EduTrackOne.Tests.ApplicationTests.UseCases
 {
@@ -24,10 +23,8 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
         private readonly Mock<IUnitOfWork> _mockUow;
         private readonly Mock<ICurrentUserService> _mockCurrentUser;
         private readonly Mock<IMediator> _mockMediator;
-        private readonly UpdateUserCommandHandler _handler; 
         private readonly Mock<ILogger<UpdateUserCommandHandler>> _mockLogger;
-
-
+        private readonly UpdateUserCommandHandler _handler;
 
         public UpdateUserCommandHandlerTests()
         {
@@ -36,8 +33,6 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
             _mockCurrentUser = new Mock<ICurrentUserService>();
             _mockMediator = new Mock<IMediator>();
             _mockLogger = new Mock<ILogger<UpdateUserCommandHandler>>();
-
-
 
             _handler = new UpdateUserCommandHandler(
                 _mockRepo.Object,
@@ -61,8 +56,9 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
             );
             var command = new UpdateUserCommand(dto);
 
+            // Handler checks enum RoleUtilisateur.Role.Admin, so setup matching
             _mockCurrentUser
-                .Setup(x => x.IsInRole(It.IsAny<string>()))
+                .Setup(x => x.IsInRole(It.IsAny<RoleUtilisateur.Role>()))
                 .Returns(false);
 
             // Act
@@ -93,7 +89,7 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
             var command = new UpdateUserCommand(dto);
 
             _mockCurrentUser
-                .Setup(x => x.IsInRole(RoleUtilisateur.Role.Admin.ToString()))
+                .Setup(x => x.IsInRole(RoleUtilisateur.Role.Admin))
                 .Returns(true);
 
             _mockRepo
@@ -121,7 +117,6 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
             var existingUser = new Utilisateur(
                 id: userId,
                 identifiant: "ancienNom",
-
                 role: new RoleUtilisateur(RoleUtilisateur.Role.Enseignant),
                 statut: new StatutUtilisateur(StatutUtilisateur.StatutEnum.Actif),
                 email: new Email("ancien@example.com")
@@ -129,7 +124,7 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
             existingUser.ClearDomainEvents();
 
             _mockCurrentUser
-                .Setup(x => x.IsInRole(RoleUtilisateur.Role.Admin.ToString()))
+                .Setup(x => x.IsInRole(RoleUtilisateur.Role.Admin))
                 .Returns(true);
 
             _mockRepo
@@ -145,7 +140,6 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
             );
             var command = new UpdateUserCommand(dto);
 
-            // SaveChangesAsync renvoie un int
             _mockUow
                 .Setup(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(1);
@@ -162,20 +156,15 @@ namespace EduTrackOne.Tests.ApplicationTests.UseCases
             // Assert
             result.Should().Be(Unit.Value);
 
-            // Vérifier que les propriétés ont été mises à jour
             existingUser.Identifiant.Should().Be("nouveauNom");
             existingUser.Email.Value.Should().Be("nouveau@example.com");
             existingUser.Role.Valeur.Should().Be(RoleUtilisateur.Role.Admin);
             existingUser.Statut.Value.Should().Be(StatutUtilisateur.StatutEnum.Inactif);
 
-            // SaveChangesAsync appelé une fois
             _mockUow.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
-            // Un événement a été publié et c'est du type UserUpdatedEvent
             publishedEvents.Should().HaveCount(1);
             publishedEvents[0].Should().BeOfType<UserUpdatedEvent>();
-
         }
     }
 }
-
